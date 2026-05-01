@@ -1,0 +1,2799 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#0A0F1E" />
+  <meta name="description" content="Said Income Pro Max - Garment Factory Worker Income Tracker" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <title>Said Income Pro Max</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ============================================================
+       CSS VARIABLES & RESET
+    ============================================================ */
+    :root {
+      --bg-primary: #0A0F1E;
+      --bg-secondary: #111827;
+      --bg-card: rgba(255,255,255,0.05);
+      --bg-card-hover: rgba(255,255,255,0.09);
+      --border: rgba(255,255,255,0.10);
+      --border-glow: rgba(61,142,255,0.4);
+      --accent: #3D8EFF;
+      --accent-dim: rgba(61,142,255,0.15);
+      --accent2: #00E5A0;
+      --accent3: #FF6B6B;
+      --accent4: #FFB84D;
+      --text-primary: #F0F4FF;
+      --text-secondary: rgba(240,244,255,0.55);
+      --text-muted: rgba(240,244,255,0.3);
+      --success: #00E5A0;
+      --danger: #FF6B6B;
+      --warning: #FFB84D;
+      --glass: rgba(10,15,30,0.7);
+      --nav-height: 72px;
+      --font-main: 'Rajdhani', 'Noto Sans Devanagari', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --radius: 18px;
+      --radius-sm: 10px;
+      --shadow: 0 8px 32px rgba(0,0,0,0.4);
+      --shadow-accent: 0 0 24px rgba(61,142,255,0.25);
+    }
+
+    [data-theme="light"] {
+      --bg-primary: #F0F4FF;
+      --bg-secondary: #E4EBFF;
+      --bg-card: rgba(255,255,255,0.75);
+      --bg-card-hover: rgba(255,255,255,0.95);
+      --border: rgba(61,142,255,0.15);
+      --border-glow: rgba(61,142,255,0.35);
+      --text-primary: #0A0F1E;
+      --text-secondary: rgba(10,15,30,0.6);
+      --text-muted: rgba(10,15,30,0.35);
+      --glass: rgba(240,244,255,0.85);
+      --shadow: 0 8px 32px rgba(61,142,255,0.12);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+    body {
+      font-family: var(--font-main);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      max-width: 430px;
+      margin: 0 auto;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Background mesh */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 40% at 20% 10%, rgba(61,142,255,0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 50% at 80% 80%, rgba(0,229,160,0.08) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ============================================================
+       UTILITY CLASSES
+    ============================================================ */
+    .hidden { display: none !important; }
+    .flex { display: flex; }
+    .flex-col { flex-direction: column; }
+    .items-center { align-items: center; }
+    .justify-center { justify-content: center; }
+    .justify-between { justify-content: space-between; }
+    .gap-2 { gap: 8px; }
+    .gap-3 { gap: 12px; }
+    .gap-4 { gap: 16px; }
+    .w-full { width: 100%; }
+    .text-center { text-align: center; }
+    .relative { position: relative; }
+
+    /* ============================================================
+       SCREEN SYSTEM
+    ============================================================ */
+    .screen {
+      position: fixed;
+      inset: 0;
+      max-width: 430px;
+      margin: 0 auto;
+      overflow-y: auto;
+      overflow-x: hidden;
+      z-index: 10;
+      background: var(--bg-primary);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    .screen.slide-out { opacity: 0; transform: translateX(-40px); pointer-events: none; }
+    .screen.slide-in { animation: slideInScreen 0.35s ease forwards; }
+
+    @keyframes slideInScreen {
+      from { opacity: 0; transform: translateX(30px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    /* ============================================================
+       SPLASH SCREEN
+    ============================================================ */
+    #splash {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-primary);
+      z-index: 100;
+    }
+
+    .splash-logo {
+      width: 100px;
+      height: 100px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 44px;
+      animation: splashPop 0.6s cubic-bezier(0.34,1.56,0.64,1) 0.3s both;
+      box-shadow: 0 0 60px rgba(61,142,255,0.4);
+    }
+
+    .splash-title {
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      margin-top: 20px;
+      animation: fadeUp 0.5s ease 0.8s both;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .splash-sub {
+      color: var(--text-secondary);
+      font-size: 14px;
+      margin-top: 8px;
+      animation: fadeUp 0.5s ease 1s both;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+    }
+
+    .splash-loader {
+      width: 120px;
+      height: 3px;
+      background: var(--border);
+      border-radius: 2px;
+      margin-top: 50px;
+      overflow: hidden;
+      animation: fadeUp 0.5s ease 1.1s both;
+    }
+
+    .splash-loader-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      border-radius: 2px;
+      animation: loadBar 2s ease forwards 1.2s;
+      width: 0;
+    }
+
+    @keyframes loadBar { from { width: 0; } to { width: 100%; } }
+    @keyframes splashPop { from { transform: scale(0.3); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* ============================================================
+       ONBOARDING SCREEN
+    ============================================================ */
+    #onboarding {
+      padding: 0;
+      overflow: hidden;
+    }
+
+    .onboard-slides { display: flex; width: 300%; transition: transform 0.4s cubic-bezier(0.4,0,0.2,1); }
+    .onboard-slide { width: 33.333%; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 28px; }
+
+    .onboard-icon { font-size: 80px; margin-bottom: 24px; animation: float 3s ease-in-out infinite; }
+    .onboard-title { font-size: 28px; font-weight: 700; text-align: center; margin-bottom: 12px; }
+    .onboard-desc { color: var(--text-secondary); font-size: 16px; text-align: center; line-height: 1.7; }
+
+    @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+
+    .onboard-dots { display: flex; gap: 8px; margin-top: 40px; }
+    .onboard-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); transition: all 0.3s; }
+    .onboard-dot.active { width: 24px; border-radius: 4px; background: var(--accent); }
+
+    .onboard-btn { margin-top: 32px; width: 100%; padding: 16px; background: linear-gradient(135deg, var(--accent), #5BA4FF); border: none; border-radius: var(--radius); color: #fff; font-size: 18px; font-weight: 700; font-family: var(--font-main); cursor: pointer; letter-spacing: 1px; transition: transform 0.15s, box-shadow 0.15s; }
+    .onboard-btn:active { transform: scale(0.97); }
+
+    /* Setup Form (Slide 3) */
+    .setup-form { width: 100%; display: flex; flex-direction: column; gap: 14px; margin-top: 24px; }
+    .role-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .role-card { padding: 16px; border: 2px solid var(--border); border-radius: var(--radius-sm); text-align: center; cursor: pointer; transition: all 0.2s; background: var(--bg-card); }
+    .role-card.selected { border-color: var(--accent); background: var(--accent-dim); }
+    .role-card .role-icon { font-size: 28px; display: block; margin-bottom: 6px; }
+    .role-card .role-name { font-size: 14px; font-weight: 700; color: var(--text-secondary); }
+    .role-card.selected .role-name { color: var(--accent); }
+
+    /* ============================================================
+       INPUT STYLES
+    ============================================================ */
+    .input-group { display: flex; flex-direction: column; gap: 6px; }
+    .input-label { font-size: 13px; font-weight: 600; color: var(--text-secondary); letter-spacing: 1px; text-transform: uppercase; }
+
+    .inp {
+      width: 100%;
+      padding: 14px 16px;
+      background: var(--bg-card);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text-primary);
+      font-size: 16px;
+      font-family: var(--font-main);
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      -webkit-appearance: none;
+    }
+
+    .inp:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-dim); }
+    .inp::placeholder { color: var(--text-muted); }
+
+    select.inp option { background: #111827; color: var(--text-primary); }
+
+    /* ============================================================
+       LOGIN SCREEN
+    ============================================================ */
+    #login {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 28px;
+      min-height: 100vh;
+    }
+
+    .login-avatar { width: 80px; height: 80px; background: linear-gradient(135deg, var(--accent), var(--accent2)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 36px; margin-bottom: 16px; box-shadow: 0 0 40px rgba(61,142,255,0.3); }
+    .login-name { font-size: 24px; font-weight: 700; }
+    .login-role { color: var(--text-secondary); font-size: 14px; margin-top: 4px; letter-spacing: 2px; text-transform: uppercase; }
+
+    .pin-dots { display: flex; gap: 16px; margin: 32px 0; }
+    .pin-dot { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--border); transition: all 0.2s; }
+    .pin-dot.filled { background: var(--accent); border-color: var(--accent); transform: scale(1.1); }
+
+    .pin-pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; width: 100%; max-width: 300px; }
+    .pin-btn { padding: 18px; background: var(--bg-card); border: 1.5px solid var(--border); border-radius: var(--radius-sm); color: var(--text-primary); font-size: 22px; font-weight: 700; font-family: var(--font-main); cursor: pointer; transition: all 0.15s; backdrop-filter: blur(10px); }
+    .pin-btn:active { transform: scale(0.93); background: var(--accent-dim); border-color: var(--accent); }
+    .pin-btn.danger { color: var(--danger); }
+    .pin-error { color: var(--danger); font-size: 14px; margin-top: 12px; animation: shake 0.4s ease; }
+
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      20% { transform: translateX(-8px); }
+      40% { transform: translateX(8px); }
+      60% { transform: translateX(-5px); }
+      80% { transform: translateX(5px); }
+    }
+
+    /* ============================================================
+       BOTTOM NAVIGATION
+    ============================================================ */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 430px;
+      height: var(--nav-height);
+      background: var(--glass);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      z-index: 50;
+      padding-bottom: env(safe-area-inset-bottom, 0);
+    }
+
+    .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 16px; cursor: pointer; transition: all 0.2s; border-radius: var(--radius-sm); flex: 1; }
+    .nav-icon { font-size: 22px; transition: transform 0.2s; }
+    .nav-label { font-size: 11px; font-weight: 600; color: var(--text-muted); letter-spacing: 0.5px; transition: color 0.2s; }
+    .nav-item.active .nav-icon { transform: translateY(-2px); }
+    .nav-item.active .nav-label { color: var(--accent); }
+    .nav-item.active { position: relative; }
+    .nav-item.active::before { content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 40px; height: 3px; background: var(--accent); border-radius: 0 0 3px 3px; }
+
+    /* ============================================================
+       APP SCREENS (with nav)
+    ============================================================ */
+    .app-screen {
+      padding: 0 0 calc(var(--nav-height) + 16px) 0;
+      min-height: 100vh;
+      position: relative;
+      z-index: 1;
+    }
+
+    .screen-header {
+      padding: 56px 24px 20px;
+      position: sticky;
+      top: 0;
+      background: var(--glass);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      z-index: 20;
+    }
+
+    .screen-title { font-size: 26px; font-weight: 700; letter-spacing: 1px; }
+    .screen-subtitle { color: var(--text-secondary); font-size: 14px; margin-top: 2px; }
+
+    /* ============================================================
+       CARDS
+    ============================================================ */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      backdrop-filter: blur(10px);
+      transition: all 0.2s;
+    }
+
+    .card:active { background: var(--bg-card-hover); }
+
+    .card-accent { border-color: var(--border-glow); box-shadow: var(--shadow-accent); }
+
+    /* ============================================================
+       HOME SCREEN — DASHBOARD
+    ============================================================ */
+    #home .app-screen { padding-top: 0; }
+
+    .home-header {
+      padding: 56px 24px 24px;
+      background: linear-gradient(180deg, rgba(61,142,255,0.08) 0%, transparent 100%);
+    }
+
+    .home-greeting { font-size: 15px; color: var(--text-secondary); font-weight: 500; }
+    .home-name { font-size: 28px; font-weight: 700; margin-top: 2px; }
+    .home-date { font-size: 13px; color: var(--text-muted); margin-top: 6px; font-family: var(--font-mono); }
+
+    .net-balance-card {
+      margin: 0 16px 20px;
+      background: linear-gradient(135deg, rgba(61,142,255,0.2), rgba(0,229,160,0.15));
+      border: 1px solid var(--border-glow);
+      border-radius: var(--radius);
+      padding: 24px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .net-balance-card::before {
+      content: '';
+      position: absolute;
+      top: -30px;
+      right: -30px;
+      width: 120px;
+      height: 120px;
+      background: radial-gradient(circle, rgba(61,142,255,0.2), transparent 70%);
+      border-radius: 50%;
+    }
+
+    .net-label { font-size: 12px; letter-spacing: 3px; text-transform: uppercase; color: var(--text-secondary); font-weight: 600; }
+    .net-amount { font-size: 48px; font-weight: 700; font-family: var(--font-mono); color: var(--accent2); margin: 8px 0; letter-spacing: -1px; }
+    .net-sub { font-size: 13px; color: var(--text-muted); }
+
+    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 0 16px; }
+
+    .stat-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px; }
+    .stat-icon { font-size: 22px; margin-bottom: 8px; }
+    .stat-label { font-size: 11px; color: var(--text-secondary); letter-spacing: 1px; text-transform: uppercase; font-weight: 600; }
+    .stat-value { font-size: 22px; font-weight: 700; font-family: var(--font-mono); margin-top: 4px; }
+
+    .ai-banner {
+      margin: 16px;
+      background: linear-gradient(135deg, rgba(255,184,77,0.12), rgba(255,107,107,0.08));
+      border: 1px solid rgba(255,184,77,0.25);
+      border-radius: var(--radius);
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .ai-icon { font-size: 28px; flex-shrink: 0; }
+    .ai-text { font-size: 14px; line-height: 1.5; color: var(--text-secondary); }
+    .ai-text strong { color: var(--warning); }
+
+    .today-section { padding: 0 16px; margin-top: 16px; }
+    .section-title { font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 12px; }
+
+    /* FAB */
+    .fab {
+      position: fixed;
+      bottom: calc(var(--nav-height) + 20px);
+      right: calc(50% - 215px + 20px);
+      width: 58px;
+      height: 58px;
+      background: linear-gradient(135deg, var(--accent), #5BA4FF);
+      border-radius: 50%;
+      border: none;
+      color: #fff;
+      font-size: 28px;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(61,142,255,0.45);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s, box-shadow 0.2s;
+      z-index: 40;
+    }
+
+    .fab:active { transform: scale(0.92); box-shadow: 0 4px 12px rgba(61,142,255,0.3); }
+
+    /* ============================================================
+       ENTRY MODAL
+    ============================================================ */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(6px);
+      z-index: 60;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+    }
+
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+
+    .modal {
+      width: 100%;
+      max-width: 430px;
+      max-height: 90vh;
+      background: var(--bg-secondary);
+      border-radius: var(--radius) var(--radius) 0 0;
+      border: 1px solid var(--border);
+      border-bottom: none;
+      overflow-y: auto;
+      transform: translateY(100%);
+      transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
+      padding: 8px 0 32px;
+    }
+
+    .modal-overlay.open .modal { transform: translateY(0); }
+
+    .modal-handle { width: 40px; height: 4px; background: var(--border); border-radius: 2px; margin: 12px auto 20px; }
+    .modal-title { font-size: 20px; font-weight: 700; padding: 0 20px 16px; border-bottom: 1px solid var(--border); }
+    .modal-body { padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+
+    .live-calc {
+      background: var(--accent-dim);
+      border: 1px solid var(--border-glow);
+      border-radius: var(--radius-sm);
+      padding: 14px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: var(--accent);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .live-calc .total-line { font-size: 18px; font-weight: 700; color: var(--accent2); margin-top: 4px; }
+
+    .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    .voice-btn {
+      width: 100%;
+      padding: 12px;
+      background: rgba(255,107,107,0.12);
+      border: 1px solid rgba(255,107,107,0.3);
+      border-radius: var(--radius-sm);
+      color: var(--danger);
+      font-size: 14px;
+      font-weight: 700;
+      font-family: var(--font-main);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+
+    .voice-btn.listening { background: rgba(255,107,107,0.25); animation: pulse 1s ease infinite; }
+    @keyframes pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(255,107,107,0.4); } 50% { box-shadow: 0 0 0 10px rgba(255,107,107,0); } }
+
+    .photo-preview { width: 100%; height: 140px; border: 2px dashed var(--border); border-radius: var(--radius-sm); overflow: hidden; position: relative; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 8px; color: var(--text-muted); font-size: 14px; }
+    .photo-preview img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .photo-preview input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+
+    .btn-primary { width: 100%; padding: 16px; background: linear-gradient(135deg, var(--accent), #5BA4FF); border: none; border-radius: var(--radius-sm); color: #fff; font-size: 17px; font-weight: 700; font-family: var(--font-main); cursor: pointer; letter-spacing: 0.5px; transition: transform 0.15s, opacity 0.15s; }
+    .btn-primary:active { transform: scale(0.98); opacity: 0.9; }
+
+    .btn-secondary { width: 100%; padding: 14px; background: transparent; border: 1.5px solid var(--border); border-radius: var(--radius-sm); color: var(--text-secondary); font-size: 15px; font-weight: 600; font-family: var(--font-main); cursor: pointer; transition: all 0.2s; }
+    .btn-secondary:active { background: var(--bg-card); }
+
+    .btn-danger { background: rgba(255,107,107,0.12); border: 1.5px solid rgba(255,107,107,0.3); color: var(--danger); }
+
+    /* ============================================================
+       RECORDS SCREEN
+    ============================================================ */
+    .filter-tabs { display: flex; gap: 8px; padding: 16px; overflow-x: auto; scrollbar-width: none; }
+    .filter-tabs::-webkit-scrollbar { display: none; }
+    .filter-tab { padding: 8px 16px; border: 1.5px solid var(--border); border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: all 0.2s; color: var(--text-secondary); background: var(--bg-card); font-family: var(--font-main); }
+    .filter-tab.active { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
+
+    .records-list { padding: 0 16px; display: flex; flex-direction: column; gap: 10px; }
+
+    .record-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .record-card:active { background: var(--bg-card-hover); }
+    .record-card.expanded { border-color: var(--border-glow); }
+
+    .record-top { display: flex; justify-content: space-between; align-items: flex-start; }
+    .record-lot { font-size: 16px; font-weight: 700; }
+    .record-type { font-size: 11px; color: var(--text-secondary); margin-top: 2px; letter-spacing: 1px; }
+    .record-amount { font-size: 18px; font-weight: 700; font-family: var(--font-mono); color: var(--accent2); }
+    .record-date { font-size: 11px; color: var(--text-muted); font-family: var(--font-mono); }
+    .record-counts { display: flex; gap: 12px; margin-top: 8px; }
+    .record-count { font-size: 12px; color: var(--text-secondary); background: var(--bg-secondary); padding: 3px 8px; border-radius: 4px; }
+    .record-detail { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); display: none; flex-direction: column; gap: 8px; }
+    .record-card.expanded .record-detail { display: flex; }
+    .record-thumb { width: 80px; height: 60px; border-radius: 8px; object-fit: cover; }
+    .record-note { font-size: 13px; color: var(--text-secondary); font-style: italic; }
+    .record-delete { padding: 6px 12px; background: rgba(255,107,107,0.1); border: 1px solid rgba(255,107,107,0.2); border-radius: 6px; color: var(--danger); font-size: 12px; font-weight: 600; cursor: pointer; font-family: var(--font-main); }
+
+    .deduction-card { border-left: 3px solid var(--danger); }
+    .deduction-amount { color: var(--danger); }
+
+    .empty-state { text-align: center; padding: 60px 24px; color: var(--text-muted); }
+    .empty-icon { font-size: 56px; margin-bottom: 16px; }
+    .empty-text { font-size: 16px; }
+
+    /* ============================================================
+       REPORTS SCREEN
+    ============================================================ */
+    .reports-content { padding: 16px; display: flex; flex-direction: column; gap: 14px; }
+
+    .report-btn {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 18px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: var(--font-main);
+      color: var(--text-primary);
+      width: 100%;
+      text-align: left;
+    }
+
+    .report-btn:active { background: var(--bg-card-hover); transform: scale(0.99); }
+    .report-btn-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+    .report-btn-title { font-size: 16px; font-weight: 700; }
+    .report-btn-desc { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+    .upi-section { display: flex; flex-direction: column; gap: 12px; }
+    #qr-canvas { border-radius: var(--radius-sm); display: block; }
+    .qr-wrapper { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 20px; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-sm); }
+
+    /* ============================================================
+       TEAM SCREEN
+    ============================================================ */
+    .team-content { padding: 0 16px; }
+
+    .team-payout-banner {
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, rgba(0,229,160,0.15), rgba(61,142,255,0.1));
+      border: 1px solid rgba(0,229,160,0.25);
+      border-radius: var(--radius);
+      padding: 20px;
+      text-align: center;
+    }
+
+    .payout-label { font-size: 12px; letter-spacing: 3px; text-transform: uppercase; color: var(--accent2); margin-bottom: 4px; }
+    .payout-amount { font-size: 36px; font-weight: 700; font-family: var(--font-mono); color: var(--accent2); }
+
+    .worker-card {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .worker-card:active { background: var(--bg-card-hover); }
+    .worker-avatar { width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent2)); display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; flex-shrink: 0; }
+    .worker-info { flex: 1; }
+    .worker-name { font-size: 16px; font-weight: 700; }
+    .worker-stats { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+    .worker-earning { font-size: 18px; font-weight: 700; font-family: var(--font-mono); color: var(--accent2); }
+    .rank-badge { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; }
+    .rank-1 { background: rgba(255,215,0,0.2); color: gold; }
+    .rank-2 { background: rgba(192,192,192,0.2); color: silver; }
+    .rank-3 { background: rgba(205,127,50,0.2); color: #CD7F32; }
+
+    /* ============================================================
+       SETTINGS SCREEN
+    ============================================================ */
+    .settings-content { padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+
+    .settings-section-title { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); padding: 8px 4px 4px; }
+
+    .setting-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .setting-item:active { background: var(--bg-card-hover); }
+    .setting-left { display: flex; align-items: center; gap: 12px; }
+    .setting-icon { font-size: 20px; width: 36px; text-align: center; }
+    .setting-label { font-size: 15px; font-weight: 600; }
+    .setting-sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+    .setting-right { color: var(--text-muted); font-size: 18px; }
+
+    /* Toggle Switch */
+    .toggle { position: relative; width: 48px; height: 26px; }
+    .toggle input { opacity: 0; width: 0; height: 0; }
+    .toggle-slider { position: absolute; inset: 0; background: var(--border); border-radius: 13px; cursor: pointer; transition: 0.3s; }
+    .toggle-slider::before { content: ''; position: absolute; height: 20px; width: 20px; left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: 0.3s; }
+    input:checked + .toggle-slider { background: var(--accent); }
+    input:checked + .toggle-slider::before { transform: translateX(22px); }
+
+    /* ============================================================
+       DEDUCTION MODAL
+    ============================================================ */
+    .deduction-type-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .deduction-type-btn { padding: 12px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); text-align: center; cursor: pointer; transition: all 0.2s; background: var(--bg-card); font-family: var(--font-main); color: var(--text-secondary); font-size: 14px; font-weight: 600; }
+    .deduction-type-btn.selected { border-color: var(--danger); background: rgba(255,107,107,0.1); color: var(--danger); }
+
+    /* ============================================================
+       CONFETTI
+    ============================================================ */
+    .confetti-piece {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+      pointer-events: none;
+      z-index: 9999;
+      animation: confettiFall var(--dur) ease var(--delay) forwards;
+    }
+
+    @keyframes confettiFall {
+      0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+    }
+
+    /* ============================================================
+       TOAST
+    ============================================================ */
+    .toast {
+      position: fixed;
+      bottom: calc(var(--nav-height) + 20px);
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 50px;
+      padding: 12px 24px;
+      font-size: 14px;
+      font-weight: 600;
+      z-index: 200;
+      opacity: 0;
+      transition: all 0.3s;
+      white-space: nowrap;
+      backdrop-filter: blur(20px);
+    }
+
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .toast.success { border-color: rgba(0,229,160,0.4); color: var(--success); }
+    .toast.error { border-color: rgba(255,107,107,0.4); color: var(--danger); }
+
+    /* ============================================================
+       WORKER DETAIL MODAL
+    ============================================================ */
+    .worker-detail-content { padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+
+    /* ============================================================
+       CONFIRM DIALOG
+    ============================================================ */
+    .confirm-dialog {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(6px);
+      z-index: 80;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+
+    .confirm-dialog.open { opacity: 1; pointer-events: all; }
+    .confirm-box { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px; width: 100%; max-width: 320px; text-align: center; }
+    .confirm-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+    .confirm-desc { font-size: 14px; color: var(--text-secondary); margin-bottom: 24px; }
+    .confirm-actions { display: flex; gap: 10px; }
+
+    /* ============================================================
+       ANIMATIONS (Entrance)
+    ============================================================ */
+    .stagger-in > * {
+      animation: fadeUp 0.4s ease both;
+    }
+
+    .stagger-in > *:nth-child(1) { animation-delay: 0.05s; }
+    .stagger-in > *:nth-child(2) { animation-delay: 0.1s; }
+    .stagger-in > *:nth-child(3) { animation-delay: 0.15s; }
+    .stagger-in > *:nth-child(4) { animation-delay: 0.2s; }
+    .stagger-in > *:nth-child(5) { animation-delay: 0.25s; }
+
+    /* ============================================================
+       PRINT STYLES (for PDF)
+    ============================================================ */
+    @media print {
+      body { background: #111 !important; color: #fff !important; max-width: 100%; }
+      .bottom-nav, .fab, .screen-header { display: none !important; }
+      #print-report { display: block !important; }
+      .print-only { display: block; }
+    }
+
+    #print-report { display: none; }
+
+    /* Search bar */
+    .search-bar { margin: 0 16px 12px; position: relative; }
+    .search-bar input { padding-left: 40px; }
+    .search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 16px; }
+
+    /* Worker modal records */
+    .worker-entry-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); }
+    .worker-entry-row:last-child { border-bottom: none; }
+
+    /* Version info */
+    .version-info { text-align: center; padding: 16px; color: var(--text-muted); font-size: 12px; font-family: var(--font-mono); }
+  </style>
+</head>
+<body>
+
+<!-- ================================================================
+     SPLASH SCREEN
+================================================================ -->
+<div id="splash" class="screen">
+  <div class="splash-logo">💰</div>
+  <div class="splash-title">SAID INCOME</div>
+  <div class="splash-sub">Pro Max</div>
+  <div class="splash-loader"><div class="splash-loader-bar"></div></div>
+</div>
+
+<!-- ================================================================
+     ONBOARDING SCREEN
+================================================================ -->
+<div id="onboarding" class="screen hidden">
+  <div class="onboard-slides" id="onboard-slides">
+
+    <!-- Slide 1 -->
+    <div class="onboard-slide">
+      <div class="onboard-icon">📊</div>
+      <div class="onboard-title">Apna Kamai Track Karo</div>
+      <div class="onboard-desc">Har taki, tilak aur lot ka record raho. Real-time mein apni kamai dekho — koi math nahi, sab automatic!</div>
+      <div class="onboard-dots">
+        <div class="onboard-dot active" id="dot0"></div>
+        <div class="onboard-dot" id="dot1"></div>
+        <div class="onboard-dot" id="dot2"></div>
+      </div>
+      <button class="onboard-btn" onclick="nextSlide()">Aage →</button>
+    </div>
+
+    <!-- Slide 2 -->
+    <div class="onboard-slide">
+      <div class="onboard-icon">🏭</div>
+      <div class="onboard-title">Smart Tools Har Kaam Ke Liye</div>
+      <div class="onboard-desc">Voice entry se record karo, photos leke bundle save karo, aur AI se jaano kitna paisa Sunday tak milega!</div>
+      <div class="onboard-dots">
+        <div class="onboard-dot" id="dot3"></div>
+        <div class="onboard-dot active" id="dot4"></div>
+        <div class="onboard-dot" id="dot5"></div>
+      </div>
+      <button class="onboard-btn" onclick="nextSlide()">Aage →</button>
+    </div>
+
+    <!-- Slide 3 — Setup -->
+    <div class="onboard-slide">
+      <div class="onboard-icon">⚙️</div>
+      <div class="onboard-title">Setup Karo</div>
+      <div class="setup-form">
+        <div class="input-group">
+          <label class="input-label">Apna Naam</label>
+          <input class="inp" id="setup-name" type="text" placeholder="Jaise: Ramesh Bhai" autocomplete="off" />
+        </div>
+        <div class="input-group">
+          <label class="input-label">Role Chunno</label>
+          <div class="role-selector">
+            <div class="role-card selected" id="role-worker" onclick="selectRole('worker')">
+              <span class="role-icon">👷</span>
+              <div class="role-name">WORKER</div>
+            </div>
+            <div class="role-card" id="role-thekedaar" onclick="selectRole('thekedaar')">
+              <span class="role-icon">👔</span>
+              <div class="role-name">THEKEDAAR</div>
+            </div>
+          </div>
+        </div>
+        <div class="input-group">
+          <label class="input-label">Company / Factory Ka Naam</label>
+          <input class="inp" id="setup-company" type="text" placeholder="Jaise: Ramesh Garments" autocomplete="off" />
+        </div>
+        <div class="input-group">
+          <label class="input-label">4-Digit PIN Banao</label>
+          <input class="inp" id="setup-pin" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" placeholder="••••" autocomplete="new-password" />
+        </div>
+        <div class="input-group">
+          <label class="input-label">Default Taki Rate (₹ per piece)</label>
+          <input class="inp" id="setup-taki-rate" type="number" placeholder="e.g. 0.50" inputmode="decimal" />
+        </div>
+        <div class="input-group">
+          <label class="input-label">Default Tilak Rate (₹ per piece)</label>
+          <input class="inp" id="setup-tilak-rate" type="number" placeholder="e.g. 0.30" inputmode="decimal" />
+        </div>
+        <div class="onboard-dots">
+          <div class="onboard-dot" id="dot6"></div>
+          <div class="onboard-dot" id="dot7"></div>
+          <div class="onboard-dot active" id="dot8"></div>
+        </div>
+        <button class="onboard-btn" onclick="completeSetup()">Shuru Karo 🚀</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ================================================================
+     LOGIN SCREEN
+================================================================ -->
+<div id="login" class="screen hidden">
+  <div class="login-avatar" id="login-avatar">👤</div>
+  <div class="login-name" id="login-name">Worker</div>
+  <div class="login-role" id="login-role">WORKER</div>
+
+  <div class="pin-dots" id="pin-dots">
+    <div class="pin-dot" id="pd0"></div>
+    <div class="pin-dot" id="pd1"></div>
+    <div class="pin-dot" id="pd2"></div>
+    <div class="pin-dot" id="pd3"></div>
+  </div>
+
+  <div id="pin-error" class="pin-error hidden">❌ Galat PIN! Dobara koshish karo.</div>
+
+  <div class="pin-pad">
+    <button class="pin-btn" onclick="pinPress('1')">1</button>
+    <button class="pin-btn" onclick="pinPress('2')">2</button>
+    <button class="pin-btn" onclick="pinPress('3')">3</button>
+    <button class="pin-btn" onclick="pinPress('4')">4</button>
+    <button class="pin-btn" onclick="pinPress('5')">5</button>
+    <button class="pin-btn" onclick="pinPress('6')">6</button>
+    <button class="pin-btn" onclick="pinPress('7')">7</button>
+    <button class="pin-btn" onclick="pinPress('8')">8</button>
+    <button class="pin-btn" onclick="pinPress('9')">9</button>
+    <button class="pin-btn" onclick="pinPress('')" style="font-size:16px;color:var(--text-muted)">Reset</button>
+    <button class="pin-btn" onclick="pinPress('0')">0</button>
+    <button class="pin-btn danger" onclick="pinBackspace()">⌫</button>
+  </div>
+</div>
+
+<!-- ================================================================
+     MAIN APP (Home, Records, Reports, Team, Settings)
+================================================================ -->
+<div id="app" class="hidden">
+
+  <!-- ============================================================
+       HOME SCREEN
+  ============================================================ -->
+  <div id="screen-home" class="screen app-screen">
+    <div class="home-header">
+      <div class="home-greeting">Jai Hind 👋</div>
+      <div class="home-name" id="home-name">Worker Bhai</div>
+      <div class="home-date" id="home-date">—</div>
+    </div>
+
+    <!-- Net Balance Card -->
+    <div class="net-balance-card">
+      <div class="net-label">💼 Net Balance</div>
+      <div class="net-amount" id="net-balance">₹0</div>
+      <div class="net-sub" id="net-balance-sub">Total - Advance - Shortage + Custom</div>
+    </div>
+
+    <!-- 4 Stat Cards -->
+    <div class="stats-grid stagger-in">
+      <div class="stat-card">
+        <div class="stat-icon">🧵</div>
+        <div class="stat-label">Taki+Tilak Kamai</div>
+        <div class="stat-value" id="stat-production" style="color:var(--accent)">₹0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">💡</div>
+        <div class="stat-label">Custom Income</div>
+        <div class="stat-value" id="stat-custom" style="color:var(--accent2)">₹0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">💸</div>
+        <div class="stat-label">Upaad / Advance</div>
+        <div class="stat-value" id="stat-advance" style="color:var(--warning)">₹0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">⚠️</div>
+        <div class="stat-label">Shortage / Repair</div>
+        <div class="stat-value" id="stat-shortage" style="color:var(--danger)">₹0</div>
+      </div>
+    </div>
+
+    <!-- AI Predictor -->
+    <div class="ai-banner" id="ai-banner">
+      <div class="ai-icon">🤖</div>
+      <div class="ai-text" id="ai-text">Abhi koi data nahi hai. Entries dalo toh AI prediction dekhega!</div>
+    </div>
+
+    <!-- Today's Entries -->
+    <div class="today-section">
+      <div class="section-title">📋 Aaj Ki Entries</div>
+      <div id="today-entries">
+        <div class="empty-state">
+          <div class="empty-icon">📝</div>
+          <div class="empty-text">Aaj koi entry nahi hai.<br/>+ button dabao!</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="height: 80px;"></div>
+  </div>
+
+  <!-- ============================================================
+       RECORDS SCREEN
+  ============================================================ -->
+  <div id="screen-records" class="screen app-screen hidden">
+    <div class="screen-header">
+      <div class="screen-title">📋 Records</div>
+      <div class="screen-subtitle" id="records-count">0 entries</div>
+    </div>
+
+    <div class="filter-tabs">
+      <button class="filter-tab active" onclick="setFilter('all')" id="filter-all">Sab</button>
+      <button class="filter-tab" onclick="setFilter('today')" id="filter-today">Aaj</button>
+      <button class="filter-tab" onclick="setFilter('week')" id="filter-week">Is Hafte</button>
+      <button class="filter-tab" onclick="setFilter('month')" id="filter-month">Is Mahine</button>
+      <button class="filter-tab" onclick="setFilter('deductions')" id="filter-deductions">Katauti</button>
+    </div>
+
+    <div class="search-bar">
+      <div class="search-icon">🔍</div>
+      <input class="inp" id="search-input" type="text" placeholder="Lot number se dhundho..." oninput="renderRecords()" />
+    </div>
+
+    <div class="records-list" id="records-list"></div>
+    <div style="height: 32px;"></div>
+  </div>
+
+  <!-- ============================================================
+       REPORTS SCREEN
+  ============================================================ -->
+  <div id="screen-reports" class="screen app-screen hidden">
+    <div class="screen-header">
+      <div class="screen-title">📊 Reports</div>
+      <div class="screen-subtitle">Export & Share</div>
+    </div>
+
+    <div class="reports-content">
+
+      <!-- Summary Card -->
+      <div class="card card-accent">
+        <div class="section-title" style="margin-bottom:12px">Weekly Summary</div>
+        <div id="weekly-summary-text" style="font-size:14px;color:var(--text-secondary);line-height:1.7;">Loading...</div>
+      </div>
+
+      <!-- Export Buttons -->
+      <button class="report-btn" onclick="exportCSV()">
+        <div class="report-btn-icon" style="background:rgba(0,229,160,0.15)">📊</div>
+        <div>
+          <div class="report-btn-title">CSV Export</div>
+          <div class="report-btn-desc">Excel mein khulne wali file</div>
+        </div>
+      </button>
+
+      <button class="report-btn" onclick="printReport()">
+        <div class="report-btn-icon" style="background:rgba(61,142,255,0.15)">📄</div>
+        <div>
+          <div class="report-btn-title">PDF Report Print</div>
+          <div class="report-btn-desc">Dark themed professional report</div>
+        </div>
+      </button>
+
+      <button class="report-btn" onclick="shareWhatsApp()">
+        <div class="report-btn-icon" style="background:rgba(37,211,102,0.15)">💬</div>
+        <div>
+          <div class="report-btn-title">WhatsApp Share</div>
+          <div class="report-btn-desc">Weekly report ek tap mein bhejo</div>
+        </div>
+      </button>
+
+      <button class="report-btn" onclick="toggleBluetooth()">
+        <div class="report-btn-icon" style="background:rgba(100,149,237,0.15)">🖨️</div>
+        <div>
+          <div class="report-btn-title">Bluetooth Print</div>
+          <div class="report-btn-desc">Thermal printer se receipt nikalo</div>
+        </div>
+      </button>
+
+      <!-- UPI QR -->
+      <div class="section-title" style="padding:4px 0;margin-top:8px">UPI QR Generator</div>
+      <div class="upi-section">
+        <div class="input-group">
+          <label class="input-label">UPI ID</label>
+          <input class="inp" id="upi-id-input" type="text" placeholder="name@upi" />
+        </div>
+        <div class="input-group">
+          <label class="input-label">Amount (₹) — default Net Balance</label>
+          <input class="inp" id="upi-amount" type="number" placeholder="0" inputmode="numeric" />
+        </div>
+        <button class="btn-primary" onclick="generateQR()">QR Banao 📱</button>
+        <div class="qr-wrapper hidden" id="qr-wrapper">
+          <canvas id="qr-canvas" width="200" height="200"></canvas>
+          <div style="font-size:13px;color:var(--text-secondary)" id="qr-label">UPI QR ready!</div>
+        </div>
+      </div>
+
+    </div>
+    <div style="height: 32px;"></div>
+  </div>
+
+  <!-- ============================================================
+       TEAM SCREEN
+  ============================================================ -->
+  <div id="screen-team" class="screen app-screen hidden">
+    <div class="screen-header">
+      <div class="screen-title">👥 Team</div>
+      <div class="screen-subtitle" id="team-count">0 workers</div>
+    </div>
+
+    <div class="team-content">
+      <div class="team-payout-banner">
+        <div class="payout-label">Total Team Payout</div>
+        <div class="payout-amount" id="team-total-payout">₹0</div>
+      </div>
+
+      <button class="btn-primary" style="margin-bottom:16px" onclick="openAddWorkerModal()">+ Worker Add Karo</button>
+
+      <div id="worker-list"></div>
+    </div>
+    <div style="height: 32px;"></div>
+  </div>
+
+  <!-- ============================================================
+       SETTINGS SCREEN
+  ============================================================ -->
+  <div id="screen-settings" class="screen app-screen hidden">
+    <div class="screen-header">
+      <div class="screen-title">⚙️ Settings</div>
+      <div class="screen-subtitle" id="settings-user-info">—</div>
+    </div>
+
+    <div class="settings-content">
+
+      <div class="settings-section-title">Appearance</div>
+      <div class="setting-item">
+        <div class="setting-left">
+          <div class="setting-icon">🌙</div>
+          <div>
+            <div class="setting-label">Dark Mode</div>
+            <div class="setting-sub">Theme toggle karo</div>
+          </div>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" id="theme-toggle" checked onchange="toggleTheme()" />
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+
+      <div class="settings-section-title">Profile</div>
+      <div class="setting-item" onclick="openChangeName()">
+        <div class="setting-left">
+          <div class="setting-icon">👤</div>
+          <div>
+            <div class="setting-label">Naam Badlo</div>
+            <div class="setting-sub" id="setting-name-display">—</div>
+          </div>
+        </div>
+        <div class="setting-right">›</div>
+      </div>
+
+      <div class="setting-item" onclick="openChangePin()">
+        <div class="setting-left">
+          <div class="setting-icon">🔒</div>
+          <div>
+            <div class="setting-label">PIN Badlo</div>
+            <div class="setting-sub">4-digit security PIN</div>
+          </div>
+        </div>
+        <div class="setting-right">›</div>
+      </div>
+
+      <div class="setting-item" onclick="openChangeCompany()">
+        <div class="setting-left">
+          <div class="setting-icon">🏭</div>
+          <div>
+            <div class="setting-label">Company / Factory Naam</div>
+            <div class="setting-sub" id="setting-company-display">—</div>
+          </div>
+        </div>
+        <div class="setting-right">›</div>
+      </div>
+
+      <div class="settings-section-title">Rates</div>
+      <div class="setting-item" onclick="openRateSettings()">
+        <div class="setting-left">
+          <div class="setting-icon">💰</div>
+          <div>
+            <div class="setting-label">Default Rates Set Karo</div>
+            <div class="setting-sub" id="setting-rates-display">—</div>
+          </div>
+        </div>
+        <div class="setting-right">›</div>
+      </div>
+
+      <div class="setting-item" onclick="openUpiSettings()">
+        <div class="setting-left">
+          <div class="setting-icon">📱</div>
+          <div>
+            <div class="setting-label">UPI ID</div>
+            <div class="setting-sub" id="setting-upi-display">Not set</div>
+          </div>
+        </div>
+        <div class="setting-right">›</div>
+      </div>
+
+      <div class="settings-section-title">Data</div>
+      <div class="setting-item" onclick="exportData()">
+        <div class="setting-left">
+          <div class="setting-icon">📤</div>
+          <div>
+            <div class="setting-label">Data Backup (JSON)</div>
+            <div class="setting-sub">Saari data export karo</div>
+          </div>
+        </div>
+        <div class="setting-right">›</div>
+      </div>
+
+      <div class="setting-item" onclick="importData()">
+        <div class="setting-left">
+          <div class="setting-icon">📥</div>
+          <div>
+            <div class="setting-label">Data Import</div>
+            <div class="setting-sub">JSON file se restore karo</div>
+          </div>
+        </div>
+        <div class="setting-right">›</div>
+      </div>
+
+      <div class="setting-item" onclick="confirmClearData()" style="border-color:rgba(255,107,107,0.25)">
+        <div class="setting-left">
+          <div class="setting-icon">🗑️</div>
+          <div>
+            <div class="setting-label" style="color:var(--danger)">Saara Data Delete Karo</div>
+            <div class="setting-sub">⚠️ Yeh wapas nahi hoga!</div>
+          </div>
+        </div>
+        <div class="setting-right" style="color:var(--danger)">›</div>
+      </div>
+
+    </div>
+
+    <div class="version-info">Said Income Pro Max v1.0.0 | Made with ❤️ in India</div>
+  </div>
+
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav">
+    <div class="nav-item active" id="nav-home" onclick="switchTab('home')">
+      <div class="nav-icon">🏠</div>
+      <div class="nav-label">Home</div>
+    </div>
+    <div class="nav-item" id="nav-records" onclick="switchTab('records')">
+      <div class="nav-icon">📋</div>
+      <div class="nav-label">Records</div>
+    </div>
+    <div class="nav-item" id="nav-reports" onclick="switchTab('reports')">
+      <div class="nav-icon">📊</div>
+      <div class="nav-label">Reports</div>
+    </div>
+    <div class="nav-item" id="nav-team" onclick="switchTab('team')" id="nav-team-item">
+      <div class="nav-icon">👥</div>
+      <div class="nav-label">Team</div>
+    </div>
+    <div class="nav-item" id="nav-settings" onclick="switchTab('settings')">
+      <div class="nav-icon">⚙️</div>
+      <div class="nav-label">Settings</div>
+    </div>
+  </nav>
+
+  <!-- FAB -->
+  <button class="fab" id="fab-btn" onclick="openEntryModal()">+</button>
+
+</div>
+
+<!-- ================================================================
+     ENTRY MODAL
+================================================================ -->
+<div class="modal-overlay" id="entry-modal-overlay" onclick="closeEntryOnOverlay(event)">
+  <div class="modal" id="entry-modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">+ Naya Entry</div>
+    <div class="modal-body">
+
+      <!-- Voice Entry -->
+      <button class="voice-btn" id="voice-btn" onclick="startVoice()">
+        🎤 Voice Entry — "800 taki 250 tilak lot 786"
+      </button>
+
+      <!-- Lot Info -->
+      <div class="row-2">
+        <div class="input-group">
+          <label class="input-label">Lot Type</label>
+          <select class="inp" id="lot-type">
+            <option value="Narrow Fit">Narrow Fit</option>
+            <option value="Cargo">Cargo</option>
+            <option value="Slim Denim">Slim Denim</option>
+            <option value="Loose Fit">Loose Fit</option>
+            <option value="Bootcut">Bootcut</option>
+            <option value="Custom">Custom</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <label class="input-label">Lot Number</label>
+          <input class="inp" id="lot-number" type="text" placeholder="e.g. 786" autocomplete="off" />
+        </div>
+      </div>
+
+      <!-- Taki -->
+      <div class="row-2">
+        <div class="input-group">
+          <label class="input-label">Taki Count</label>
+          <input class="inp" id="taki-count" type="number" placeholder="0" inputmode="numeric" oninput="updateLiveCalc()" />
+        </div>
+        <div class="input-group">
+          <label class="input-label">Taki Rate (₹)</label>
+          <input class="inp" id="taki-rate" type="number" placeholder="0.50" inputmode="decimal" oninput="updateLiveCalc()" />
+        </div>
+      </div>
+
+      <!-- Tilak -->
+      <div class="row-2">
+        <div class="input-group">
+          <label class="input-label">Tilak Count</label>
+          <input class="inp" id="tilak-count" type="number" placeholder="0" inputmode="numeric" oninput="updateLiveCalc()" />
+        </div>
+        <div class="input-group">
+          <label class="input-label">Tilak Rate (₹)</label>
+          <input class="inp" id="tilak-rate" type="number" placeholder="0.30" inputmode="decimal" oninput="updateLiveCalc()" />
+        </div>
+      </div>
+
+      <!-- Live Calc -->
+      <div class="live-calc" id="live-calc">
+        <div>🧵 Taki Income: <strong id="calc-taki">₹0</strong></div>
+        <div>🪡 Tilak Income: <strong id="calc-tilak">₹0</strong></div>
+        <div class="total-line">💰 Total: <span id="calc-total">₹0</span></div>
+      </div>
+
+      <!-- Custom Income & Note -->
+      <div class="input-group">
+        <label class="input-label">Custom / Bonus Income (₹)</label>
+        <input class="inp" id="custom-income" type="number" placeholder="0 (optional)" inputmode="numeric" />
+      </div>
+
+      <div class="input-group">
+        <label class="input-label">Note / Tippani</label>
+        <input class="inp" id="entry-note" type="text" placeholder="Koi baat likhni ho..." />
+      </div>
+
+      <!-- Bundle Photo -->
+      <div class="input-group">
+        <label class="input-label">Bundle Photo</label>
+        <div class="photo-preview" id="photo-preview" onclick="document.getElementById('photo-input').click()">
+          <div style="font-size:28px">📷</div>
+          <div>Tap to capture bundle photo</div>
+          <input type="file" id="photo-input" accept="image/*" capture="camera" onchange="handlePhoto(event)" style="position:absolute;inset:0;opacity:0;cursor:pointer" />
+        </div>
+      </div>
+
+      <button class="btn-primary" onclick="saveEntry()">✅ Save Entry</button>
+      <button class="btn-secondary" onclick="closeEntryModal()">Cancel</button>
+
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================
+     DEDUCTION MODAL
+================================================================ -->
+<div class="modal-overlay" id="deduction-modal-overlay" onclick="closeDedOnOverlay(event)">
+  <div class="modal" id="deduction-modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">➕ Katauti / Advance</div>
+    <div class="modal-body">
+
+      <div class="input-group">
+        <label class="input-label">Type</label>
+        <div class="deduction-type-selector">
+          <div class="deduction-type-btn selected" id="ded-type-advance" onclick="selectDedType('advance')">💸 Advance (Upaad)</div>
+          <div class="deduction-type-btn" id="ded-type-shortage" onclick="selectDedType('shortage')">⚠️ Shortage / Repair</div>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label class="input-label">Amount (₹)</label>
+        <input class="inp" id="ded-amount" type="number" placeholder="0" inputmode="numeric" />
+      </div>
+
+      <div class="input-group" id="ded-worker-group">
+        <label class="input-label">Worker Ka Naam (optional)</label>
+        <input class="inp" id="ded-worker" type="text" placeholder="Kis worker ka hai?" />
+      </div>
+
+      <div class="input-group">
+        <label class="input-label">Reason / Wajah</label>
+        <input class="inp" id="ded-reason" type="text" placeholder="Katauti ki wajah likhna..." />
+      </div>
+
+      <button class="btn-primary" onclick="saveDeduction()">✅ Save</button>
+      <button class="btn-secondary" onclick="closeDeductionModal()">Cancel</button>
+
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================
+     ADD WORKER MODAL
+================================================================ -->
+<div class="modal-overlay" id="worker-modal-overlay" onclick="closeWorkerOnOverlay(event)">
+  <div class="modal" id="worker-modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">👷 Worker Add Karo</div>
+    <div class="modal-body">
+      <div class="input-group">
+        <label class="input-label">Worker Ka Naam</label>
+        <input class="inp" id="worker-name-inp" type="text" placeholder="Jaise: Ramesh" />
+      </div>
+      <div class="input-group">
+        <label class="input-label">Phone Number (optional)</label>
+        <input class="inp" id="worker-phone-inp" type="tel" placeholder="9876543210" inputmode="numeric" />
+      </div>
+      <button class="btn-primary" onclick="saveWorker()">✅ Add Worker</button>
+      <button class="btn-secondary" onclick="closeWorkerModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================
+     WORKER DETAIL MODAL
+================================================================ -->
+<div class="modal-overlay" id="worker-detail-overlay" onclick="closeWorkerDetailOnOverlay(event)">
+  <div class="modal" id="worker-detail-modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="worker-detail-title">Worker Detail</div>
+    <div class="worker-detail-content" id="worker-detail-content"></div>
+  </div>
+</div>
+
+<!-- ================================================================
+     SETTINGS MODALS (Generic input modal)
+================================================================ -->
+<div class="modal-overlay" id="settings-modal-overlay" onclick="closeSettingsModalOnOverlay(event)">
+  <div class="modal" id="settings-modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="settings-modal-title">Update</div>
+    <div class="modal-body" id="settings-modal-body"></div>
+  </div>
+</div>
+
+<!-- ================================================================
+     CONFIRM DIALOG
+================================================================ -->
+<div class="confirm-dialog" id="confirm-dialog">
+  <div class="confirm-box">
+    <div class="confirm-title" id="confirm-title">Are you sure?</div>
+    <div class="confirm-desc" id="confirm-desc">Yeh action undo nahi hoga.</div>
+    <div class="confirm-actions">
+      <button class="btn-secondary" style="flex:1" onclick="closeConfirm()">Cancel</button>
+      <button class="btn-primary btn-danger" style="flex:1;background:var(--danger);box-shadow:none" id="confirm-ok-btn" onclick="executeConfirm()">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- Hidden file input for JSON import -->
+<input type="file" id="json-import-input" accept=".json" style="display:none" onchange="handleJSONImport(event)" />
+
+<!-- ================================================================
+     JAVASCRIPT
+================================================================ -->
+<script>
+// ================================================================
+//  STATE & HELPERS
+// ================================================================
+let currentPin = '';
+let currentFilter = 'all';
+let confirmCallback = null;
+let selectedRole = 'worker';
+let selectedDedType = 'advance';
+let voiceRecognition = null;
+let isListening = false;
+let capturedPhoto = null;
+let entryEditId = null;
+let currentWorkerDetail = null;
+
+// Load config
+function getConfig() {
+  try { return JSON.parse(localStorage.getItem('sipm_config') || 'null'); } catch { return null; }
+}
+function saveConfig(c) { localStorage.setItem('sipm_config', JSON.stringify(c)); }
+
+function getEntries() {
+  try { return JSON.parse(localStorage.getItem('sipm_entries') || '[]'); } catch { return []; }
+}
+function saveEntries(e) { localStorage.setItem('sipm_entries', JSON.stringify(e)); }
+
+function getDeductions() {
+  try { return JSON.parse(localStorage.getItem('sipm_deductions') || '[]'); } catch { return []; }
+}
+function saveDeductions(d) { localStorage.setItem('sipm_deductions', JSON.stringify(d)); }
+
+function getTeam() {
+  try { return JSON.parse(localStorage.getItem('sipm_team') || '[]'); } catch { return []; }
+}
+function saveTeam(t) { localStorage.setItem('sipm_team', JSON.stringify(t)); }
+
+function vibrate(ms) { if (navigator.vibrate) navigator.vibrate(ms); }
+
+function showToast(msg, type = 'success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast ' + type + ' show';
+  setTimeout(() => { t.className = 'toast'; }, 2800);
+}
+
+function fmt(n) { return '₹' + (parseFloat(n) || 0).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 2}); }
+
+function fmtDate(iso) {
+  const d = new Date(iso);
+  return d.toLocaleDateString('hi-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+}
+
+function genId() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+
+// ================================================================
+//  SCREEN MANAGER
+// ================================================================
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+  const el = document.getElementById(id);
+  if (el) { el.classList.remove('hidden'); el.classList.add('slide-in'); setTimeout(() => el.classList.remove('slide-in'), 400); }
+}
+
+// ================================================================
+//  SPLASH → ROUTE
+// ================================================================
+window.addEventListener('load', () => {
+  showScreen('splash');
+  setTimeout(() => {
+    const cfg = getConfig();
+    if (!cfg || !cfg.isSetup) {
+      showScreen('onboarding');
+    } else {
+      showScreen('login');
+      loadLoginScreen(cfg);
+    }
+  }, 3000);
+});
+
+// ================================================================
+//  ONBOARDING
+// ================================================================
+let onboardSlide = 0;
+function nextSlide() {
+  vibrate(30);
+  if (onboardSlide < 2) {
+    onboardSlide++;
+    document.getElementById('onboard-slides').style.transform = `translateX(-${onboardSlide * 33.333}%)`;
+  }
+}
+
+function selectRole(r) {
+  vibrate(30);
+  selectedRole = r;
+  document.getElementById('role-worker').classList.toggle('selected', r === 'worker');
+  document.getElementById('role-thekedaar').classList.toggle('selected', r === 'thekedaar');
+}
+
+function completeSetup() {
+  vibrate(40);
+  const name = document.getElementById('setup-name').value.trim();
+  const pin = document.getElementById('setup-pin').value.trim();
+  const company = document.getElementById('setup-company').value.trim();
+  const takilRate = parseFloat(document.getElementById('setup-taki-rate').value) || 0.5;
+  const tilakRate = parseFloat(document.getElementById('setup-tilak-rate').value) || 0.3;
+
+  if (!name) { showToast('Apna naam likhna zaroori hai!', 'error'); return; }
+  if (pin.length !== 4 || !/^\d{4}$/.test(pin)) { showToast('4-digit PIN chahiye!', 'error'); return; }
+
+  const cfg = {
+    name, pin, role: selectedRole, company: company || 'My Factory',
+    takilRate, tilakRate, isSetup: true, upiId: '', theme: 'dark'
+  };
+  saveConfig(cfg);
+  launchApp(cfg);
+}
+
+// ================================================================
+//  LOGIN
+// ================================================================
+function loadLoginScreen(cfg) {
+  document.getElementById('login-name').textContent = cfg.name;
+  document.getElementById('login-role').textContent = cfg.role.toUpperCase();
+  document.getElementById('login-avatar').textContent = cfg.role === 'thekedaar' ? '👔' : '👷';
+}
+
+function pinPress(d) {
+  vibrate(30);
+  if (d === '') { currentPin = ''; updatePinDots(); return; }
+  if (currentPin.length < 4) {
+    currentPin += d;
+    updatePinDots();
+    if (currentPin.length === 4) setTimeout(checkPin, 200);
+  }
+}
+
+function pinBackspace() {
+  vibrate(30);
+  currentPin = currentPin.slice(0, -1);
+  updatePinDots();
+}
+
+function updatePinDots() {
+  for (let i = 0; i < 4; i++) {
+    document.getElementById('pd' + i).classList.toggle('filled', i < currentPin.length);
+  }
+}
+
+function checkPin() {
+  const cfg = getConfig();
+  if (currentPin === cfg.pin) {
+    document.getElementById('pin-error').classList.add('hidden');
+    launchApp(cfg);
+  } else {
+    vibrate([200, 50, 200]);
+    document.getElementById('pin-error').classList.remove('hidden');
+    const dots = document.getElementById('pin-dots');
+    dots.style.animation = 'none';
+    setTimeout(() => { dots.style.animation = 'shake 0.4s ease'; }, 10);
+    currentPin = '';
+    updatePinDots();
+    setTimeout(() => { document.getElementById('pin-error').classList.add('hidden'); }, 3000);
+  }
+}
+
+// ================================================================
+//  LAUNCH APP
+// ================================================================
+function launchApp(cfg) {
+  showScreen('app');
+  document.getElementById('app').classList.remove('hidden');
+
+  // Apply theme
+  if (cfg.theme === 'light') {
+    document.documentElement.setAttribute('data-theme', 'light');
+    document.getElementById('theme-toggle').checked = false;
+  } else {
+    document.documentElement.removeAttribute('data-theme');
+    document.getElementById('theme-toggle').checked = true;
+  }
+
+  // Team tab visibility
+  if (cfg.role !== 'thekedaar') {
+    document.getElementById('nav-team').style.display = 'none';
+  }
+
+  // Pre-fill default rates
+  document.getElementById('taki-rate').value = cfg.takilRate || '';
+  document.getElementById('tilak-rate').value = cfg.tilakRate || '';
+
+  // UPI
+  if (cfg.upiId) document.getElementById('upi-id-input').value = cfg.upiId;
+
+  switchTab('home');
+}
+
+// ================================================================
+//  TAB SWITCHER
+// ================================================================
+function switchTab(tab) {
+  vibrate(25);
+  ['home','records','reports','team','settings'].forEach(t => {
+    document.getElementById('screen-' + t).classList.add('hidden');
+    document.getElementById('nav-' + t)?.classList.remove('active');
+  });
+  document.getElementById('screen-' + tab).classList.remove('hidden');
+  document.getElementById('nav-' + tab)?.classList.add('active');
+
+  // FAB
+  document.getElementById('fab-btn').style.display = (tab === 'home' || tab === 'records') ? 'flex' : 'none';
+
+  // Render relevant screen
+  if (tab === 'home') renderHome();
+  if (tab === 'records') renderRecords();
+  if (tab === 'reports') renderReports();
+  if (tab === 'team') renderTeam();
+  if (tab === 'settings') renderSettings();
+}
+
+// ================================================================
+//  HOME DASHBOARD
+// ================================================================
+function renderHome() {
+  const cfg = getConfig();
+  if (!cfg) return;
+
+  document.getElementById('home-name').textContent = cfg.name + ' 🙌';
+  document.getElementById('home-date').textContent = new Date().toLocaleDateString('hi-IN', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+
+  const entries = getEntries();
+  const deductions = getDeductions();
+
+  const totalProduction = entries.reduce((s, e) => s + (parseFloat(e.total) || 0), 0);
+  const totalCustom = entries.reduce((s, e) => s + (parseFloat(e.customIncome) || 0), 0);
+  const totalAdvance = deductions.filter(d => d.type === 'advance').reduce((s, d) => s + (parseFloat(d.amount) || 0), 0);
+  const totalShortage = deductions.filter(d => d.type === 'shortage').reduce((s, d) => s + (parseFloat(d.amount) || 0), 0);
+  const netBalance = totalProduction + totalCustom - totalAdvance - totalShortage;
+
+  animateValue('stat-production', totalProduction, fmt);
+  animateValue('stat-custom', totalCustom, fmt);
+  animateValue('stat-advance', totalAdvance, fmt);
+  animateValue('stat-shortage', totalShortage, fmt);
+
+  document.getElementById('net-balance').textContent = fmt(netBalance);
+  document.getElementById('net-balance').style.color = netBalance >= 0 ? 'var(--accent2)' : 'var(--danger)';
+
+  // AI Prediction
+  renderAIPrediction(entries);
+
+  // Today's entries
+  const today = new Date().toDateString();
+  const todayEntries = entries.filter(e => new Date(e.date).toDateString() === today);
+  const todayEl = document.getElementById('today-entries');
+  if (todayEntries.length === 0) {
+    todayEl.innerHTML = `<div class="empty-state"><div class="empty-icon">📝</div><div class="empty-text">Aaj koi entry nahi hai.<br/>+ button dabao!</div></div>`;
+  } else {
+    todayEl.innerHTML = todayEntries.slice().reverse().map(e => `
+      <div class="record-card" style="margin-bottom:10px">
+        <div class="record-top">
+          <div>
+            <div class="record-lot">Lot #${e.lotNumber || '—'}</div>
+            <div class="record-type">${e.lotType}</div>
+          </div>
+          <div style="text-align:right">
+            <div class="record-amount">${fmt(e.total)}</div>
+            <div class="record-date">${fmtDate(e.date)}</div>
+          </div>
+        </div>
+        <div class="record-counts">
+          <div class="record-count">🧵 Taki: ${e.takiCount || 0}</div>
+          <div class="record-count">🪡 Tilak: ${e.tilakCount || 0}</div>
+        </div>
+      </div>
+    `).join('');
+  }
+}
+
+function animateValue(id, end, formatter) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const start = 0;
+  const duration = 700;
+  const startTime = performance.now();
+  function update(now) {
+    const elapsed = now - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    const current = start + (end - start) * easeOut(progress);
+    el.textContent = formatter(current);
+    if (progress < 1) requestAnimationFrame(update);
+  }
+  requestAnimationFrame(update);
+}
+
+function easeOut(t) { return 1 - Math.pow(1 - t, 3); }
+
+function renderAIPrediction(entries) {
+  const ai = document.getElementById('ai-text');
+  if (entries.length < 3) {
+    ai.innerHTML = 'Abhi koi data nahi hai. <strong>3+ entries</strong> dalo toh AI prediction dekhega!';
+    return;
+  }
+  const now = new Date();
+  const cutoff = new Date(now - 14 * 86400000);
+  const recent = entries.filter(e => new Date(e.date) >= cutoff);
+  if (recent.length === 0) { ai.innerHTML = 'Last 14 din mein koi entry nahi.'; return; }
+
+  const days = new Set(recent.map(e => new Date(e.date).toDateString())).size || 1;
+  const total14 = recent.reduce((s, e) => s + (parseFloat(e.total) || 0), 0);
+  const dailyAvg = total14 / days;
+
+  const day = now.getDay(); // 0=Sun
+  const daysToSun = day === 0 ? 7 : (7 - day);
+  const predicted = Math.round(dailyAvg * daysToSun);
+
+  ai.innerHTML = `Aapki average daily kamai <strong>${fmt(dailyAvg)}</strong> hai. Is speed se Sunday tak aap <strong style="color:var(--accent2)">${fmt(predicted)}</strong> aur kama sakte ho! 🚀`;
+}
+
+// ================================================================
+//  FAB — Open Entry Modal
+// ================================================================
+function openEntryModal(editEntry = null) {
+  vibrate(40);
+  const cfg = getConfig();
+  capturedPhoto = null;
+  entryEditId = null;
+
+  document.getElementById('photo-preview').innerHTML = `
+    <div style="font-size:28px">📷</div>
+    <div>Tap to capture bundle photo</div>
+    <input type="file" id="photo-input" accept="image/*" capture="camera" onchange="handlePhoto(event)" style="position:absolute;inset:0;opacity:0;cursor:pointer" />
+  `;
+
+  if (!editEntry) {
+    document.getElementById('taki-count').value = '';
+    document.getElementById('tilak-count').value = '';
+    document.getElementById('lot-number').value = '';
+    document.getElementById('custom-income').value = '';
+    document.getElementById('entry-note').value = '';
+    document.getElementById('taki-rate').value = cfg?.takilRate || '';
+    document.getElementById('tilak-rate').value = cfg?.tilakRate || '';
+  }
+
+  updateLiveCalc();
+  document.getElementById('entry-modal-overlay').classList.add('open');
+}
+
+function closeEntryModal() {
+  vibrate(20);
+  document.getElementById('entry-modal-overlay').classList.remove('open');
+}
+
+function closeEntryOnOverlay(e) {
+  if (e.target === document.getElementById('entry-modal-overlay')) closeEntryModal();
+}
+
+function updateLiveCalc() {
+  const tc = parseFloat(document.getElementById('taki-count').value) || 0;
+  const tr = parseFloat(document.getElementById('taki-rate').value) || 0;
+  const tlc = parseFloat(document.getElementById('tilak-count').value) || 0;
+  const tlr = parseFloat(document.getElementById('tilak-rate').value) || 0;
+
+  const takilIncome = tc * tr;
+  const tilakIncome = tlc * tlr;
+  const total = takilIncome + tilakIncome;
+
+  document.getElementById('calc-taki').textContent = fmt(takilIncome);
+  document.getElementById('calc-tilak').textContent = fmt(tilakIncome);
+  document.getElementById('calc-total').textContent = fmt(total);
+}
+
+function handlePhoto(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    capturedPhoto = ev.target.result;
+    document.getElementById('photo-preview').innerHTML = `
+      <img src="${capturedPhoto}" alt="bundle" />
+      <input type="file" id="photo-input" accept="image/*" capture="camera" onchange="handlePhoto(event)" style="position:absolute;inset:0;opacity:0;cursor:pointer" />
+    `;
+  };
+  reader.readAsDataURL(file);
+}
+
+function saveEntry() {
+  vibrate(50);
+  const tc = parseFloat(document.getElementById('taki-count').value) || 0;
+  const tr = parseFloat(document.getElementById('taki-rate').value) || 0;
+  const tlc = parseFloat(document.getElementById('tilak-count').value) || 0;
+  const tlr = parseFloat(document.getElementById('tilak-rate').value) || 0;
+  const ci = parseFloat(document.getElementById('custom-income').value) || 0;
+  const lotType = document.getElementById('lot-type').value;
+  const lotNum = document.getElementById('lot-number').value.trim();
+  const note = document.getElementById('entry-note').value.trim();
+
+  if (tc === 0 && tlc === 0 && ci === 0) {
+    showToast('Kuch toh bharo! Taki, Tilak ya Custom income.', 'error');
+    return;
+  }
+
+  const total = tc * tr + tlc * tlr;
+  const entry = {
+    id: entryEditId || genId(),
+    date: new Date().toISOString(),
+    lotType, lotNumber: lotNum,
+    takiCount: tc, takiRate: tr,
+    tilakCount: tlc, tilakRate: tlr,
+    customIncome: ci,
+    photo: capturedPhoto,
+    note, total
+  };
+
+  const entries = getEntries();
+  const idx = entries.findIndex(e => e.id === entry.id);
+  if (idx >= 0) entries[idx] = entry; else entries.push(entry);
+  saveEntries(entries);
+
+  closeEntryModal();
+  showToast('✅ Entry save ho gayi!');
+  launchConfetti();
+  renderHome();
+}
+
+// ================================================================
+//  VOICE ENTRY
+// ================================================================
+function startVoice() {
+  vibrate(60);
+  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+    showToast('Voice entry is browser mein kaam nahi karta.', 'error');
+    return;
+  }
+
+  if (isListening) {
+    voiceRecognition && voiceRecognition.stop();
+    isListening = false;
+    document.getElementById('voice-btn').classList.remove('listening');
+    document.getElementById('voice-btn').textContent = '🎤 Voice Entry — "800 taki 250 tilak lot 786"';
+    return;
+  }
+
+  const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+  voiceRecognition = new SpeechRec();
+  voiceRecognition.lang = 'hi-IN';
+  voiceRecognition.interimResults = false;
+  voiceRecognition.maxAlternatives = 1;
+
+  voiceRecognition.onstart = () => {
+    isListening = true;
+    document.getElementById('voice-btn').classList.add('listening');
+    document.getElementById('voice-btn').textContent = '🔴 Sun raha hoon... boliye';
+  };
+
+  voiceRecognition.onresult = (e) => {
+    const transcript = e.results[0][0].transcript;
+    parseVoiceInput(transcript);
+    isListening = false;
+    document.getElementById('voice-btn').classList.remove('listening');
+    document.getElementById('voice-btn').textContent = '✅ ' + transcript;
+  };
+
+  voiceRecognition.onerror = () => {
+    isListening = false;
+    document.getElementById('voice-btn').classList.remove('listening');
+    document.getElementById('voice-btn').textContent = '🎤 Voice Entry — "800 taki 250 tilak lot 786"';
+    showToast('Voice recognize nahi hua, dobara try karo.', 'error');
+  };
+
+  voiceRecognition.start();
+}
+
+function parseVoiceInput(t) {
+  const taki = t.match(/(\d+)\s*(taki|टाकी)/i);
+  const tilak = t.match(/(\d+)\s*(tilak|टिलक)/i);
+  const lot = t.match(/lot\s*(\w+)/i);
+
+  if (taki) { document.getElementById('taki-count').value = taki[1]; }
+  if (tilak) { document.getElementById('tilak-count').value = tilak[1]; }
+  if (lot) { document.getElementById('lot-number').value = lot[1]; }
+
+  updateLiveCalc();
+  showToast('🎤 Voice entry fill ho gayi!');
+}
+
+// ================================================================
+//  RECORDS SCREEN
+// ================================================================
+function setFilter(f) {
+  vibrate(25);
+  currentFilter = f;
+  ['all','today','week','month','deductions'].forEach(x => {
+    document.getElementById('filter-' + x)?.classList.toggle('active', x === f);
+  });
+
+  // FAB for deductions
+  if (f === 'deductions') {
+    document.getElementById('fab-btn').onclick = () => openDeductionModal();
+    document.getElementById('fab-btn').textContent = '−';
+  } else {
+    document.getElementById('fab-btn').onclick = () => openEntryModal();
+    document.getElementById('fab-btn').textContent = '+';
+  }
+
+  renderRecords();
+}
+
+function renderRecords() {
+  const search = (document.getElementById('search-input')?.value || '').toLowerCase();
+  const list = document.getElementById('records-list');
+
+  if (currentFilter === 'deductions') {
+    const deds = getDeductions().slice().reverse();
+    document.getElementById('records-count').textContent = deds.length + ' katauti records';
+    if (deds.length === 0) {
+      list.innerHTML = `<div class="empty-state"><div class="empty-icon">✅</div><div class="empty-text">Koi katauti nahi hai!</div></div>`;
+      return;
+    }
+    list.innerHTML = deds.map(d => `
+      <div class="record-card deduction-card">
+        <div class="record-top">
+          <div>
+            <div class="record-lot">${d.type === 'advance' ? '💸 Advance' : '⚠️ Shortage/Repair'}</div>
+            <div class="record-type">${d.reason || 'No reason'} ${d.workerName ? '• ' + d.workerName : ''}</div>
+          </div>
+          <div style="text-align:right">
+            <div class="record-amount deduction-amount">-${fmt(d.amount)}</div>
+            <div class="record-date">${fmtDate(d.date)}</div>
+          </div>
+        </div>
+        <div style="margin-top:8px">
+          <button class="record-delete" onclick="deleteDeduction('${d.id}')">🗑 Delete</button>
+        </div>
+      </div>
+    `).join('');
+    return;
+  }
+
+  let entries = getEntries().slice().reverse();
+
+  const now = new Date();
+  const todayStr = now.toDateString();
+  const weekAgo = new Date(now - 7 * 86400000);
+  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+
+  if (currentFilter === 'today') entries = entries.filter(e => new Date(e.date).toDateString() === todayStr);
+  else if (currentFilter === 'week') entries = entries.filter(e => new Date(e.date) >= weekAgo);
+  else if (currentFilter === 'month') entries = entries.filter(e => new Date(e.date) >= monthStart);
+
+  if (search) entries = entries.filter(e => (e.lotNumber || '').toLowerCase().includes(search));
+
+  document.getElementById('records-count').textContent = entries.length + ' entries';
+
+  if (entries.length === 0) {
+    list.innerHTML = `<div class="empty-state"><div class="empty-icon">📝</div><div class="empty-text">Koi entry nahi mili.</div></div>`;
+    return;
+  }
+
+  list.innerHTML = entries.map(e => `
+    <div class="record-card" id="rc-${e.id}" onclick="toggleRecord('${e.id}')">
+      <div class="record-top">
+        <div>
+          <div class="record-lot">Lot #${e.lotNumber || '—'}</div>
+          <div class="record-type">${e.lotType}</div>
+        </div>
+        <div style="text-align:right">
+          <div class="record-amount">${fmt(e.total + (e.customIncome || 0))}</div>
+          <div class="record-date">${fmtDate(e.date)}</div>
+        </div>
+      </div>
+      <div class="record-counts">
+        <div class="record-count">🧵 ${e.takiCount || 0} × ₹${e.takiRate || 0}</div>
+        <div class="record-count">🪡 ${e.tilakCount || 0} × ₹${e.tilakRate || 0}</div>
+        ${e.customIncome ? `<div class="record-count" style="color:var(--accent2)">💡 +${fmt(e.customIncome)}</div>` : ''}
+      </div>
+      <div class="record-detail" id="rd-${e.id}">
+        ${e.photo ? `<img class="record-thumb" src="${e.photo}" alt="bundle" />` : ''}
+        ${e.note ? `<div class="record-note">"${e.note}"</div>` : ''}
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="record-delete" onclick="deleteEntry('${e.id}',event)">🗑 Delete</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function toggleRecord(id) {
+  vibrate(20);
+  const card = document.getElementById('rc-' + id);
+  const detail = document.getElementById('rd-' + id);
+  const isExpanded = card.classList.contains('expanded');
+  card.classList.toggle('expanded', !isExpanded);
+  detail.style.display = isExpanded ? 'none' : 'flex';
+}
+
+function deleteEntry(id, e) {
+  e && e.stopPropagation();
+  vibrate(40);
+  openConfirm('Entry Delete Karein?', 'Yeh entry hamesha ke liye chali jayegi!', () => {
+    const entries = getEntries().filter(en => en.id !== id);
+    saveEntries(entries);
+    renderRecords();
+    renderHome();
+    showToast('Entry delete ho gayi.', 'error');
+  });
+}
+
+function deleteDeduction(id) {
+  vibrate(40);
+  openConfirm('Katauti Delete Karein?', 'Yeh record delete ho jayega!', () => {
+    const deds = getDeductions().filter(d => d.id !== id);
+    saveDeductions(deds);
+    renderRecords();
+    renderHome();
+    showToast('Katauti delete ho gayi.', 'error');
+  });
+}
+
+// ================================================================
+//  DEDUCTION MODAL
+// ================================================================
+function openDeductionModal() {
+  vibrate(40);
+  selectedDedType = 'advance';
+  document.getElementById('ded-type-advance').classList.add('selected');
+  document.getElementById('ded-type-shortage').classList.remove('selected');
+  document.getElementById('ded-amount').value = '';
+  document.getElementById('ded-worker').value = '';
+  document.getElementById('ded-reason').value = '';
+  document.getElementById('deduction-modal-overlay').classList.add('open');
+}
+
+function closeDeductionModal() {
+  vibrate(20);
+  document.getElementById('deduction-modal-overlay').classList.remove('open');
+}
+
+function closeDedOnOverlay(e) {
+  if (e.target === document.getElementById('deduction-modal-overlay')) closeDeductionModal();
+}
+
+function selectDedType(t) {
+  vibrate(25);
+  selectedDedType = t;
+  document.getElementById('ded-type-advance').classList.toggle('selected', t === 'advance');
+  document.getElementById('ded-type-shortage').classList.toggle('selected', t === 'shortage');
+}
+
+function saveDeduction() {
+  vibrate(50);
+  const amount = parseFloat(document.getElementById('ded-amount').value);
+  if (!amount || amount <= 0) { showToast('Amount sahi bharo!', 'error'); return; }
+
+  const ded = {
+    id: genId(),
+    date: new Date().toISOString(),
+    type: selectedDedType,
+    amount,
+    workerName: document.getElementById('ded-worker').value.trim(),
+    reason: document.getElementById('ded-reason').value.trim()
+  };
+
+  const deds = getDeductions();
+  deds.push(ded);
+  saveDeductions(deds);
+  closeDeductionModal();
+  showToast('✅ Katauti save ho gayi!');
+  renderHome();
+}
+
+// ================================================================
+//  REPORTS SCREEN
+// ================================================================
+function renderReports() {
+  const cfg = getConfig();
+  const entries = getEntries();
+  const deductions = getDeductions();
+  const now = new Date();
+  const weekAgo = new Date(now - 7 * 86400000);
+  const weekEntries = entries.filter(e => new Date(e.date) >= weekAgo);
+
+  const weekProduction = weekEntries.reduce((s, e) => s + (parseFloat(e.total) || 0), 0);
+  const weekCustom = weekEntries.reduce((s, e) => s + (parseFloat(e.customIncome) || 0), 0);
+  const weekAdvance = deductions.filter(d => d.type === 'advance' && new Date(d.date) >= weekAgo).reduce((s, d) => s + d.amount, 0);
+  const weekShortage = deductions.filter(d => d.type === 'shortage' && new Date(d.date) >= weekAgo).reduce((s, d) => s + d.amount, 0);
+  const weekNet = weekProduction + weekCustom - weekAdvance - weekShortage;
+
+  document.getElementById('weekly-summary-text').innerHTML = `
+    <strong>${cfg?.company || 'My Factory'}</strong> — Pichhle 7 din<br/>
+    🧵 Taki+Tilak: <strong>${fmt(weekProduction)}</strong><br/>
+    💡 Custom: <strong>${fmt(weekCustom)}</strong><br/>
+    💸 Advance: <strong style="color:var(--warning)">${fmt(weekAdvance)}</strong><br/>
+    ⚠️ Shortage: <strong style="color:var(--danger)">${fmt(weekShortage)}</strong><br/>
+    💰 Net: <strong style="color:var(--accent2)">${fmt(weekNet)}</strong>
+  `;
+
+  const cfg2 = getConfig();
+  if (cfg2?.upiId) document.getElementById('upi-id-input').value = cfg2.upiId;
+
+  const nb = weekNet;
+  document.getElementById('upi-amount').value = Math.max(0, Math.round(nb));
+}
+
+function exportCSV() {
+  vibrate(40);
+  const entries = getEntries();
+  const deductions = getDeductions();
+  const cfg = getConfig();
+
+  let csv = 'Date,Lot Type,Lot Number,Taki Count,Taki Rate,Tilak Count,Tilak Rate,Production Total,Custom Income,Note\n';
+  entries.forEach(e => {
+    csv += `"${fmtDate(e.date)}","${e.lotType}","${e.lotNumber || ''}",${e.takiCount || 0},${e.takiRate || 0},${e.tilakCount || 0},${e.tilakRate || 0},${e.total || 0},${e.customIncome || 0},"${e.note || ''}"\n`;
+  });
+
+  csv += '\nKatauti Records\nDate,Type,Amount,Worker,Reason\n';
+  deductions.forEach(d => {
+    csv += `"${fmtDate(d.date)}","${d.type}",${d.amount},"${d.workerName || ''}","${d.reason || ''}"\n`;
+  });
+
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${cfg?.name || 'Worker'}_Income_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('✅ CSV download ho raha hai!');
+}
+
+function printReport() {
+  vibrate(40);
+  const entries = getEntries();
+  const deductions = getDeductions();
+  const cfg = getConfig();
+
+  const totalProd = entries.reduce((s, e) => s + (parseFloat(e.total) || 0), 0);
+  const totalCustom = entries.reduce((s, e) => s + (parseFloat(e.customIncome) || 0), 0);
+  const totalAdv = deductions.filter(d => d.type === 'advance').reduce((s, d) => s + d.amount, 0);
+  const totalShort = deductions.filter(d => d.type === 'shortage').reduce((s, d) => s + d.amount, 0);
+  const netBal = totalProd + totalCustom - totalAdv - totalShort;
+
+  const win = window.open('', '_blank');
+  win.document.write(`
+    <!DOCTYPE html><html><head><meta charset="UTF-8"><title>Income Report</title>
+    <style>
+      body { background: #111; color: #eee; font-family: monospace; padding: 20px; max-width: 800px; margin: 0 auto; }
+      h1 { color: #3D8EFF; border-bottom: 2px solid #3D8EFF; padding-bottom: 12px; }
+      table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 13px; }
+      th { background: #1a2035; color: #3D8EFF; padding: 10px; text-align: left; }
+      td { padding: 8px 10px; border-bottom: 1px solid #222; }
+      .total-row td { color: #00E5A0; font-weight: bold; }
+      .summary { background: #1a2035; padding: 16px; border-radius: 10px; margin: 20px 0; }
+      .summary div { margin: 6px 0; }
+    </style></head><body>
+    <h1>💰 ${cfg?.company || 'Income Report'}</h1>
+    <p>Worker: <strong>${cfg?.name}</strong> | Date: ${new Date().toLocaleDateString()}</p>
+    <div class="summary">
+      <div>🧵 Production: <strong>${fmt(totalProd)}</strong></div>
+      <div>💡 Custom: <strong>${fmt(totalCustom)}</strong></div>
+      <div>💸 Advance: <strong style="color:#FFB84D">${fmt(totalAdv)}</strong></div>
+      <div>⚠️ Shortage: <strong style="color:#FF6B6B">${fmt(totalShort)}</strong></div>
+      <div style="font-size:20px;color:#00E5A0">💰 NET BALANCE: <strong>${fmt(netBal)}</strong></div>
+    </div>
+    <h2 style="color:#3D8EFF">Production Entries</h2>
+    <table><tr><th>Date</th><th>Lot</th><th>Type</th><th>Taki</th><th>Tilak</th><th>Total</th></tr>
+    ${entries.map(e => `<tr><td>${fmtDate(e.date)}</td><td>${e.lotNumber || '—'}</td><td>${e.lotType}</td><td>${e.takiCount || 0}</td><td>${e.tilakCount || 0}</td><td style="color:#00E5A0">${fmt(e.total)}</td></tr>`).join('')}
+    <tr class="total-row"><td colspan="5">TOTAL</td><td>${fmt(totalProd)}</td></tr>
+    </table>
+    <script>window.onload=()=>window.print()<\/script>
+    </body></html>
+  `);
+  win.document.close();
+}
+
+function shareWhatsApp() {
+  vibrate(40);
+  const cfg = getConfig();
+  const entries = getEntries();
+  const deductions = getDeductions();
+  const now = new Date();
+  const weekAgo = new Date(now - 7 * 86400000);
+  const weekEntries = entries.filter(e => new Date(e.date) >= weekAgo);
+
+  const totalProd = weekEntries.reduce((s, e) => s + (parseFloat(e.total) || 0), 0);
+  const totalCustom = weekEntries.reduce((s, e) => s + (parseFloat(e.customIncome) || 0), 0);
+  const totalAdv = deductions.filter(d => d.type === 'advance' && new Date(d.date) >= weekAgo).reduce((s, d) => s + d.amount, 0);
+  const totalShort = deductions.filter(d => d.type === 'shortage' && new Date(d.date) >= weekAgo).reduce((s, d) => s + d.amount, 0);
+  const netBal = totalProd + totalCustom - totalAdv - totalShort;
+
+  const msg = `💰 *Said Income Pro Max* — Weekly Report
+👷 Worker: *${cfg?.name}*
+🏭 Factory: *${cfg?.company || '—'}*
+📅 ${new Date().toLocaleDateString()}
+
+🧵 Taki+Tilak: *${fmt(totalProd)}*
+💡 Custom: *${fmt(totalCustom)}*
+💸 Advance: *${fmt(totalAdv)}*
+⚠️ Shortage: *${fmt(totalShort)}*
+━━━━━━━━━━━━━
+💰 Net Balance: *${fmt(netBal)}*
+
+Sent via Said Income Pro Max 📱`;
+
+  window.open('https://wa.me/?text=' + encodeURIComponent(msg));
+}
+
+function toggleBluetooth() {
+  vibrate(50);
+  if (!navigator.bluetooth) { showToast('Bluetooth is browser mein support nahi karta.', 'error'); return; }
+
+  const cfg = getConfig();
+  const entries = getEntries();
+  const totalProd = entries.reduce((s, e) => s + (parseFloat(e.total) || 0), 0);
+
+  navigator.bluetooth.requestDevice({
+    filters: [{ services: ['000018f0-0000-1000-8000-00805f9b34fb'] }]
+  }).then(device => device.gatt.connect())
+    .then(server => server.getPrimaryService('000018f0-0000-1000-8000-00805f9b34fb'))
+    .then(service => service.getCharacteristic('00002af1-0000-1000-8000-00805f9b34fb'))
+    .then(char => {
+      const ESC = 0x1B, GS = 0x1D;
+      const lines = [
+        `Said Income Pro Max\n`,
+        `Worker: ${cfg?.name}\n`,
+        `Date: ${new Date().toLocaleDateString()}\n`,
+        `--------------------------------\n`,
+        `Total Kamai: ${fmt(totalProd)}\n`,
+        `--------------------------------\n`,
+        `Thank You!\n\n\n`,
+      ];
+      const text = lines.join('');
+      const encoded = new TextEncoder().encode(text);
+      const cmd = new Uint8Array([ESC, 0x40, ...encoded, GS, 0x56, 0x00]);
+      return char.writeValue(cmd);
+    })
+    .then(() => showToast('✅ Print ho gaya!'))
+    .catch(e => showToast('Bluetooth error: ' + e.message, 'error'));
+}
+
+// ================================================================
+//  QR CODE GENERATOR (Canvas-based)
+// ================================================================
+function generateQR() {
+  vibrate(40);
+  const upiId = document.getElementById('upi-id-input').value.trim();
+  if (!upiId) { showToast('UPI ID bharo pehle!', 'error'); return; }
+
+  const cfg = getConfig();
+  const amount = document.getElementById('upi-amount').value || '0';
+  const upiString = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(cfg?.name || 'Worker')}&am=${amount}&cu=INR`;
+
+  // Save UPI ID
+  const updCfg = { ...getConfig(), upiId };
+  saveConfig(updCfg);
+
+  document.getElementById('qr-wrapper').classList.remove('hidden');
+  const canvas = document.getElementById('qr-canvas');
+  drawQRCode(canvas, upiString, 200);
+  document.getElementById('qr-label').textContent = `UPI: ${upiId} | ₹${amount}`;
+  showToast('✅ QR ready hai!');
+}
+
+// Simple QR placeholder (real QR needs library — we use a visual placeholder)
+function drawQRCode(canvas, data, size) {
+  const ctx = canvas.getContext('2d');
+  canvas.width = size;
+  canvas.height = size;
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(0, 0, size, size);
+
+  // Use a hash to create a deterministic pattern
+  const hash = Array.from(data).reduce((h, c) => (Math.imul(31, h) + c.charCodeAt(0)) | 0, 0);
+  const grid = 21;
+  const cell = Math.floor(size / grid);
+  const rng = mulberry32(Math.abs(hash));
+
+  ctx.fillStyle = '#000';
+  // Finder patterns (corners)
+  [[0,0],[14,0],[0,14]].forEach(([r,c]) => {
+    ctx.fillRect(c*cell, r*cell, 7*cell, 7*cell);
+    ctx.fillStyle = '#fff';
+    ctx.fillRect((c+1)*cell, (r+1)*cell, 5*cell, 5*cell);
+    ctx.fillStyle = '#000';
+    ctx.fillRect((c+2)*cell, (r+2)*cell, 3*cell, 3*cell);
+  });
+
+  for (let row = 0; row < grid; row++) {
+    for (let col = 0; col < grid; col++) {
+      if ((row < 8 && col < 8) || (row < 8 && col > 12) || (row > 12 && col < 8)) continue;
+      if (rng() > 0.5) {
+        ctx.fillStyle = '#000';
+        ctx.fillRect(col*cell, row*cell, cell, cell);
+      }
+    }
+  }
+
+  // QR label overlay
+  ctx.fillStyle = '#3D8EFF';
+  ctx.font = 'bold 9px monospace';
+  ctx.textAlign = 'center';
+  ctx.fillText('UPI QR', size/2, size - 4);
+}
+
+function mulberry32(seed) {
+  return function() {
+    seed |= 0; seed = seed + 0x6D2B79F5 | 0;
+    let t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+
+// ================================================================
+//  TEAM SCREEN
+// ================================================================
+function renderTeam() {
+  const team = getTeam();
+  document.getElementById('team-count').textContent = team.length + ' workers';
+
+  const totalPayout = team.reduce((s, w) => {
+    const we = w.entries || [];
+    return s + we.reduce((ws, e) => ws + (parseFloat(e.total) || 0) + (parseFloat(e.customIncome) || 0), 0);
+  }, 0);
+  document.getElementById('team-total-payout').textContent = fmt(totalPayout);
+
+  const sorted = [...team].sort((a, b) => {
+    const aTotal = (a.entries || []).reduce((s, e) => s + (parseFloat(e.total) || 0), 0);
+    const bTotal = (b.entries || []).reduce((s, e) => s + (parseFloat(e.total) || 0), 0);
+    return bTotal - aTotal;
+  });
+
+  const wl = document.getElementById('worker-list');
+  if (sorted.length === 0) {
+    wl.innerHTML = `<div class="empty-state"><div class="empty-icon">👥</div><div class="empty-text">Koi worker nahi hai.<br/>Worker add karo!</div></div>`;
+    return;
+  }
+
+  wl.innerHTML = sorted.map((w, i) => {
+    const we = w.entries || [];
+    const total = we.reduce((s, e) => s + (parseFloat(e.total) || 0) + (parseFloat(e.customIncome) || 0), 0);
+    const takiTotal = we.reduce((s, e) => s + (parseInt(e.takiCount) || 0), 0);
+    const tilakTotal = we.reduce((s, e) => s + (parseInt(e.tilakCount) || 0), 0);
+    const rank = i < 3 ? `<div class="rank-badge rank-${i+1}">${['🥇','🥈','🥉'][i]}</div>` : `<div class="rank-badge" style="color:var(--text-muted)">#${i+1}</div>`;
+    const initials = w.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0,2);
+
+    return `
+      <div class="worker-card" onclick="openWorkerDetail('${w.id}')">
+        ${rank}
+        <div class="worker-avatar">${initials}</div>
+        <div class="worker-info">
+          <div class="worker-name">${w.name}</div>
+          <div class="worker-stats">${takiTotal} taki · ${tilakTotal} tilak · ${we.length} entries</div>
+        </div>
+        <div class="worker-earning">${fmt(total)}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function openAddWorkerModal() {
+  vibrate(40);
+  document.getElementById('worker-name-inp').value = '';
+  document.getElementById('worker-phone-inp').value = '';
+  document.getElementById('worker-modal-overlay').classList.add('open');
+}
+
+function closeWorkerModal() {
+  vibrate(20);
+  document.getElementById('worker-modal-overlay').classList.remove('open');
+}
+
+function closeWorkerOnOverlay(e) {
+  if (e.target === document.getElementById('worker-modal-overlay')) closeWorkerModal();
+}
+
+function saveWorker() {
+  vibrate(50);
+  const name = document.getElementById('worker-name-inp').value.trim();
+  if (!name) { showToast('Worker ka naam likhna zaroori hai!', 'error'); return; }
+
+  const team = getTeam();
+  team.push({ id: genId(), name, phone: document.getElementById('worker-phone-inp').value.trim(), entries: [] });
+  saveTeam(team);
+  closeWorkerModal();
+  renderTeam();
+  showToast('✅ Worker add ho gaya!');
+  launchConfetti();
+}
+
+function openWorkerDetail(workerId) {
+  vibrate(30);
+  const team = getTeam();
+  const worker = team.find(w => w.id === workerId);
+  if (!worker) return;
+  currentWorkerDetail = workerId;
+
+  const entries = worker.entries || [];
+  const total = entries.reduce((s, e) => s + (parseFloat(e.total) || 0), 0);
+
+  document.getElementById('worker-detail-title').textContent = '👷 ' + worker.name;
+  document.getElementById('worker-detail-content').innerHTML = `
+    <div class="net-balance-card" style="margin:0">
+      <div class="net-label">Total Kamai</div>
+      <div class="net-amount" style="font-size:36px">${fmt(total)}</div>
+    </div>
+
+    <div style="display:flex;gap:12px">
+      <button class="btn-primary" style="flex:1" onclick="openWorkerEntryModal()">+ Entry Add Karo</button>
+      <button class="btn-secondary btn-danger" style="flex:0.4;font-size:13px" onclick="deleteWorker('${workerId}')">🗑 Delete</button>
+    </div>
+
+    <div class="section-title" style="padding:4px 0">Entries (${entries.length})</div>
+    ${entries.length === 0 ? '<div style="color:var(--text-muted);font-size:14px;text-align:center;padding:20px">Koi entry nahi hai.</div>' :
+      entries.slice().reverse().map(e => `
+        <div class="worker-entry-row">
+          <div>
+            <div style="font-size:14px;font-weight:700">Lot #${e.lotNumber || '—'} — ${e.lotType}</div>
+            <div style="font-size:12px;color:var(--text-muted)">${fmtDate(e.date)}</div>
+          </div>
+          <div style="font-size:16px;font-weight:700;font-family:var(--font-mono);color:var(--accent2)">${fmt(e.total)}</div>
+        </div>
+      `).join('')
+    }
+  `;
+
+  document.getElementById('worker-detail-overlay').classList.add('open');
+}
+
+function openWorkerEntryModal() {
+  document.getElementById('worker-detail-overlay').classList.remove('open');
+  capturedPhoto = null;
+  entryEditId = null;
+  const cfg = getConfig();
+  document.getElementById('taki-rate').value = cfg?.takilRate || '';
+  document.getElementById('tilak-rate').value = cfg?.tilakRate || '';
+  document.getElementById('taki-count').value = '';
+  document.getElementById('tilak-count').value = '';
+  document.getElementById('lot-number').value = '';
+  document.getElementById('custom-income').value = '';
+  document.getElementById('entry-note').value = '';
+  document.getElementById('photo-preview').innerHTML = `<div style="font-size:28px">📷</div><div>Tap to capture bundle photo</div><input type="file" id="photo-input" accept="image/*" capture="camera" onchange="handleWorkerPhoto(event)" style="position:absolute;inset:0;opacity:0;cursor:pointer" />`;
+  updateLiveCalc();
+  document.getElementById('entry-modal-overlay').classList.add('open');
+  // Override save to save to worker
+  document.querySelector('#entry-modal .btn-primary').onclick = saveWorkerEntry;
+}
+
+function handleWorkerPhoto(e) { handlePhoto(e); }
+
+function saveWorkerEntry() {
+  vibrate(50);
+  const tc = parseFloat(document.getElementById('taki-count').value) || 0;
+  const tr = parseFloat(document.getElementById('taki-rate').value) || 0;
+  const tlc = parseFloat(document.getElementById('tilak-count').value) || 0;
+  const tlr = parseFloat(document.getElementById('tilak-rate').value) || 0;
+  const ci = parseFloat(document.getElementById('custom-income').value) || 0;
+
+  if (tc === 0 && tlc === 0 && ci === 0) { showToast('Kuch toh bharo!', 'error'); return; }
+
+  const entry = {
+    id: genId(),
+    date: new Date().toISOString(),
+    lotType: document.getElementById('lot-type').value,
+    lotNumber: document.getElementById('lot-number').value.trim(),
+    takiCount: tc, takiRate: tr, tilakCount: tlc, tilakRate: tlr,
+    customIncome: ci, photo: capturedPhoto,
+    note: document.getElementById('entry-note').value.trim(),
+    total: tc * tr + tlc * tlr
+  };
+
+  const team = getTeam();
+  const worker = team.find(w => w.id === currentWorkerDetail);
+  if (worker) {
+    worker.entries = worker.entries || [];
+    worker.entries.push(entry);
+    saveTeam(team);
+  }
+
+  closeEntryModal();
+  // Restore default save behavior
+  document.querySelector('#entry-modal .btn-primary').onclick = saveEntry;
+  showToast('✅ Worker entry save ho gayi!');
+  launchConfetti();
+  renderTeam();
+}
+
+function deleteWorker(workerId) {
+  openConfirm('Worker Delete Karein?', 'Saari entries bhi delete ho jayengi!', () => {
+    const team = getTeam().filter(w => w.id !== workerId);
+    saveTeam(team);
+    document.getElementById('worker-detail-overlay').classList.remove('open');
+    renderTeam();
+    showToast('Worker delete ho gaya.', 'error');
+  });
+}
+
+function closeWorkerDetailOnOverlay(e) {
+  if (e.target === document.getElementById('worker-detail-overlay')) {
+    document.getElementById('worker-detail-overlay').classList.remove('open');
+    document.querySelector('#entry-modal .btn-primary').onclick = saveEntry;
+  }
+}
+
+// ================================================================
+//  SETTINGS SCREEN
+// ================================================================
+function renderSettings() {
+  const cfg = getConfig();
+  if (!cfg) return;
+  document.getElementById('settings-user-info').textContent = cfg.name + ' • ' + cfg.role.toUpperCase();
+  document.getElementById('setting-name-display').textContent = cfg.name;
+  document.getElementById('setting-company-display').textContent = cfg.company || '—';
+  document.getElementById('setting-rates-display').textContent = `Taki: ₹${cfg.takilRate} | Tilak: ₹${cfg.tilakRate}`;
+  document.getElementById('setting-upi-display').textContent = cfg.upiId || 'Not set';
+
+  const isDark = !document.documentElement.hasAttribute('data-theme');
+  document.getElementById('theme-toggle').checked = isDark;
+}
+
+function toggleTheme() {
+  vibrate(30);
+  const isDark = document.getElementById('theme-toggle').checked;
+  if (isDark) {
+    document.documentElement.removeAttribute('data-theme');
+  } else {
+    document.documentElement.setAttribute('data-theme', 'light');
+  }
+  const cfg = getConfig();
+  if (cfg) { cfg.theme = isDark ? 'dark' : 'light'; saveConfig(cfg); }
+  document.querySelector('[data-theme]') ? null : null;
+}
+
+function openSettingsModal(title, html, onSave) {
+  document.getElementById('settings-modal-title').textContent = title;
+  document.getElementById('settings-modal-body').innerHTML = html;
+  document.getElementById('settings-modal-overlay').classList.add('open');
+  document.getElementById('settings-modal').dataset.onSave = '';
+  window._settingsOnSave = onSave;
+}
+
+function closeSettingsModalOnOverlay(e) {
+  if (e.target === document.getElementById('settings-modal-overlay')) {
+    document.getElementById('settings-modal-overlay').classList.remove('open');
+    window._settingsOnSave = null;
+  }
+}
+
+function openChangeName() {
+  vibrate(30);
+  const cfg = getConfig();
+  openSettingsModal('Naam Badlo', `
+    <div class="input-group"><label class="input-label">Naya Naam</label><input class="inp" id="sm-name" value="${cfg.name}" /></div>
+    <button class="btn-primary" onclick="saveSettingsField()">Save</button>
+    <button class="btn-secondary" onclick="document.getElementById('settings-modal-overlay').classList.remove('open')">Cancel</button>
+  `, () => {
+    const v = document.getElementById('sm-name').value.trim();
+    if (!v) { showToast('Naam empty nahi ho sakta!', 'error'); return; }
+    const c = getConfig(); c.name = v; saveConfig(c);
+    renderSettings(); renderHome();
+    document.getElementById('settings-modal-overlay').classList.remove('open');
+    showToast('✅ Naam update ho gaya!');
+  });
+}
+
+function openChangePin() {
+  vibrate(30);
+  openSettingsModal('PIN Badlo', `
+    <div class="input-group"><label class="input-label">Naya 4-Digit PIN</label><input class="inp" id="sm-pin" type="password" inputmode="numeric" maxlength="4" pattern="[0-9]*" placeholder="••••" /></div>
+    <button class="btn-primary" onclick="saveSettingsField()">Save</button>
+    <button class="btn-secondary" onclick="document.getElementById('settings-modal-overlay').classList.remove('open')">Cancel</button>
+  `, () => {
+    const v = document.getElementById('sm-pin').value.trim();
+    if (!/^\d{4}$/.test(v)) { showToast('4 digits ka PIN chahiye!', 'error'); return; }
+    const c = getConfig(); c.pin = v; saveConfig(c);
+    document.getElementById('settings-modal-overlay').classList.remove('open');
+    showToast('✅ PIN update ho gaya!');
+  });
+}
+
+function openChangeCompany() {
+  vibrate(30);
+  const cfg = getConfig();
+  openSettingsModal('Company Naam Badlo', `
+    <div class="input-group"><label class="input-label">Company / Factory</label><input class="inp" id="sm-company" value="${cfg.company || ''}" /></div>
+    <button class="btn-primary" onclick="saveSettingsField()">Save</button>
+    <button class="btn-secondary" onclick="document.getElementById('settings-modal-overlay').classList.remove('open')">Cancel</button>
+  `, () => {
+    const v = document.getElementById('sm-company').value.trim();
+    const c = getConfig(); c.company = v || 'My Factory'; saveConfig(c);
+    renderSettings();
+    document.getElementById('settings-modal-overlay').classList.remove('open');
+    showToast('✅ Company naam update ho gaya!');
+  });
+}
+
+function openRateSettings() {
+  vibrate(30);
+  const cfg = getConfig();
+  openSettingsModal('Default Rates', `
+    <div class="input-group"><label class="input-label">Taki Rate (₹ per piece)</label><input class="inp" id="sm-taki" type="number" value="${cfg.takilRate || ''}" inputmode="decimal" /></div>
+    <div class="input-group"><label class="input-label">Tilak Rate (₹ per piece)</label><input class="inp" id="sm-tilak" type="number" value="${cfg.tilakRate || ''}" inputmode="decimal" /></div>
+    <button class="btn-primary" onclick="saveSettingsField()">Save</button>
+    <button class="btn-secondary" onclick="document.getElementById('settings-modal-overlay').classList.remove('open')">Cancel</button>
+  `, () => {
+    const tr = parseFloat(document.getElementById('sm-taki').value) || 0;
+    const tlr = parseFloat(document.getElementById('sm-tilak').value) || 0;
+    const c = getConfig(); c.takilRate = tr; c.tilakRate = tlr; saveConfig(c);
+    document.getElementById('taki-rate').value = tr;
+    document.getElementById('tilak-rate').value = tlr;
+    renderSettings();
+    document.getElementById('settings-modal-overlay').classList.remove('open');
+    showToast('✅ Rates update ho gaye!');
+  });
+}
+
+function openUpiSettings() {
+  vibrate(30);
+  const cfg = getConfig();
+  openSettingsModal('UPI ID', `
+    <div class="input-group"><label class="input-label">UPI ID</label><input class="inp" id="sm-upi" type="text" value="${cfg.upiId || ''}" placeholder="name@upi" /></div>
+    <button class="btn-primary" onclick="saveSettingsField()">Save</button>
+    <button class="btn-secondary" onclick="document.getElementById('settings-modal-overlay').classList.remove('open')">Cancel</button>
+  `, () => {
+    const v = document.getElementById('sm-upi').value.trim();
+    const c = getConfig(); c.upiId = v; saveConfig(c);
+    renderSettings();
+    document.getElementById('settings-modal-overlay').classList.remove('open');
+    showToast('✅ UPI ID save ho gaya!');
+  });
+}
+
+function saveSettingsField() {
+  vibrate(40);
+  if (window._settingsOnSave) window._settingsOnSave();
+}
+
+function exportData() {
+  vibrate(40);
+  const data = {
+    config: getConfig(),
+    entries: getEntries(),
+    deductions: getDeductions(),
+    team: getTeam(),
+    exportDate: new Date().toISOString()
+  };
+  // Remove photos to keep file size small
+  data.entries = data.entries.map(e => ({ ...e, photo: null }));
+
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `SIPM_Backup_${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('✅ Backup download ho raha hai!');
+}
+
+function importData() {
+  vibrate(40);
+  document.getElementById('json-import-input').click();
+}
+
+function handleJSONImport(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const data = JSON.parse(ev.target.result);
+      if (data.config) saveConfig(data.config);
+      if (data.entries) saveEntries(data.entries);
+      if (data.deductions) saveDeductions(data.deductions);
+      if (data.team) saveTeam(data.team);
+      showToast('✅ Data import ho gaya!');
+      launchApp(getConfig());
+    } catch {
+      showToast('JSON file invalid hai!', 'error');
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+}
+
+function confirmClearData() {
+  vibrate(60);
+  openConfirm('SAARA DATA DELETE?', '⚠️ Entries, records, team — sab kuch hamesha ke liye delete ho jayega!', () => {
+    localStorage.clear();
+    showToast('Saara data delete ho gaya.', 'error');
+    setTimeout(() => location.reload(), 1500);
+  }, 'Haan, Delete Karo');
+}
+
+// ================================================================
+//  CONFIRM DIALOG
+// ================================================================
+function openConfirm(title, desc, cb, btnText = 'Delete') {
+  document.getElementById('confirm-title').textContent = title;
+  document.getElementById('confirm-desc').textContent = desc;
+  document.getElementById('confirm-ok-btn').textContent = btnText;
+  confirmCallback = cb;
+  document.getElementById('confirm-dialog').classList.add('open');
+}
+
+function closeConfirm() {
+  vibrate(20);
+  document.getElementById('confirm-dialog').classList.remove('open');
+  confirmCallback = null;
+}
+
+function executeConfirm() {
+  vibrate(60);
+  if (confirmCallback) confirmCallback();
+  closeConfirm();
+}
+
+// ================================================================
+//  CONFETTI 🎉
+// ================================================================
+function launchConfetti() {
+  const colors = ['#3D8EFF','#00E5A0','#FFB84D','#FF6B6B','#B44FFF','#00D4FF'];
+  for (let i = 0; i < 80; i++) {
+    const el = document.createElement('div');
+    el.className = 'confetti-piece';
+    el.style.cssText = `
+      left: ${Math.random() * 100}vw;
+      top: -10px;
+      background: ${colors[Math.floor(Math.random() * colors.length)]};
+      width: ${6 + Math.random() * 8}px;
+      height: ${6 + Math.random() * 8}px;
+      border-radius: ${Math.random() > 0.5 ? '50%' : '2px'};
+      --dur: ${1.5 + Math.random() * 2}s;
+      --delay: ${Math.random() * 0.8}s;
+    `;
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 3500);
+  }
+}
+</script>
+
+</body>
+</html>
